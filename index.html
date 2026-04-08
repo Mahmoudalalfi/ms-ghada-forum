@@ -470,6 +470,13 @@
       box-shadow: 0 10px 20px rgba(87, 52, 190, 0.13);
     }
 
+    .course-trigger:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
     .course-trigger:focus-visible {
       outline: none;
       border-color: #9f6cff;
@@ -1238,11 +1245,22 @@
       fieldGrid.classList.toggle("locked", !unlocked);
     }
 
+    function lockFormCompletely(message) {
+      lockableElements.forEach(function (element) {
+        element.disabled = true;
+      });
+      fieldGrid.classList.add("locked");
+      courseTrigger.disabled = true;
+      if (message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+      }
+    }
+
     function applyInviteLinkLock() {
       const pathParts = window.location.pathname.split("/").filter(Boolean);
       if (pathParts[0] !== "join" || !pathParts[1]) {
-        errorMessage.textContent = "Use your private course invite link to register.";
-        errorMessage.classList.add("show");
+        lockFormCompletely("Use your private course invite link to register.");
         return;
       }
 
@@ -1251,8 +1269,7 @@
       const lockedCourseName = courseSlugToName[courseSlug];
 
       if (!lockedCourseName || !token) {
-        errorMessage.textContent = "This invite link is invalid. Please request a new course link.";
-        errorMessage.classList.add("show");
+        lockFormCompletely("This invite link is invalid. Please request a new course link.");
         return;
       }
 
@@ -1261,8 +1278,6 @@
       setCourseValue(lockedCourseName);
 
       courseTrigger.disabled = true;
-      courseTrigger.style.opacity = "0.85";
-      courseTrigger.style.cursor = "not-allowed";
       document.querySelector(".course-hint").textContent = "Course is locked to your invite link.";
     }
 

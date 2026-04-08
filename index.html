@@ -745,6 +745,58 @@
       font-size: 0.84rem;
     }
 
+    .otp-targets {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .otp-target {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .otp-target input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .otp-target span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid #d9c7ff;
+      background: #fcf9ff;
+      color: #4f3e95;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all var(--timing-soft);
+    }
+
+    .otp-target span::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #bba8f7;
+      transition: all var(--timing-soft);
+    }
+
+    .otp-target input:checked + span {
+      background: linear-gradient(120deg, #6f38ff, #b854e5);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(120, 57, 250, 0.26);
+    }
+
+    .otp-target input:checked + span::before {
+      background: #ffffff;
+    }
+
     .note {
       margin: 0;
       color: #6f649e;
@@ -1101,11 +1153,17 @@
           </div>
 
           <div class="field full">
-            <label for="otpTarget">Verify Phone With OTP <span class="required">*</span></label>
-            <select id="otpTarget" name="otpTarget" required data-lockable>
-              <option value="parent">Parent Phone</option>
-              <option value="student">Student Phone</option>
-            </select>
+            <label>Verify Phone With OTP <span class="required">*</span></label>
+            <div class="otp-targets">
+              <label class="otp-target">
+                <input type="radio" name="otpTarget" value="parent" checked required data-lockable>
+                <span>Parent Phone</span>
+              </label>
+              <label class="otp-target">
+                <input type="radio" name="otpTarget" value="student" required data-lockable>
+                <span>Student Phone</span>
+              </label>
+            </div>
             <div class="otp-row">
               <div class="field">
                 <label for="otpCode">OTP Code <span class="required">*</span></label>
@@ -1165,7 +1223,6 @@
     const successMessage = document.getElementById("successMessage");
     const errorMessage = document.getElementById("errorMessage");
     const courseSelect = document.getElementById("courseSelect");
-    const otpTargetSelect = document.getElementById("otpTarget");
     const otpCodeInput = document.getElementById("otpCode");
     const sendOtpBtn = document.getElementById("sendOtpBtn");
     const otpStatusText = document.getElementById("otpStatusText");
@@ -1289,7 +1346,8 @@
       const studentPhone = document.getElementById("studentPhone").value.trim();
       const parentPhone = document.getElementById("parentPhone").value.trim();
       const course = courseSelect.value.trim();
-      const otpTarget = otpTargetSelect.value;
+      const selectedOtpTarget = form.querySelector("input[name='otpTarget']:checked");
+      const otpTarget = selectedOtpTarget ? selectedOtpTarget.value : "parent";
 
       if (!studentPhone || !parentPhone || !course) {
         otpStatusText.textContent = "Enter student phone, parent phone, and course first.";
@@ -1344,7 +1402,9 @@
     sendOtpBtn.addEventListener("click", requestOtp);
     document.getElementById("studentPhone").addEventListener("input", invalidateOtpSession);
     document.getElementById("parentPhone").addEventListener("input", invalidateOtpSession);
-    otpTargetSelect.addEventListener("change", invalidateOtpSession);
+    form.querySelectorAll("input[name='otpTarget']").forEach(function (radio) {
+      radio.addEventListener("change", invalidateOtpSession);
+    });
     courseSelect.addEventListener("change", invalidateOtpSession);
 
     form.addEventListener("submit", async function (event) {

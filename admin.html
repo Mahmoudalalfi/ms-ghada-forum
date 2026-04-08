@@ -79,7 +79,7 @@
 
     .controls {
       display: grid;
-      grid-template-columns: 1fr 240px auto auto;
+      grid-template-columns: 1fr 240px auto auto auto;
       gap: 10px;
       align-items: center;
     }
@@ -320,6 +320,7 @@
             <button type="button" class="filter-option" data-value="AS">AS</button>
           </div>
         </div>
+        <button id="linksBtn" class="secondary" type="button">Course Links</button>
         <button id="refreshBtn" class="secondary" type="button">Refresh</button>
         <button id="exportBtn" type="button">Export CSV</button>
       </div>
@@ -358,6 +359,7 @@
     const courseFilterLabel = document.getElementById("courseFilterLabel");
     const courseFilterPanel = document.getElementById("courseFilterPanel");
     const courseFilterOptions = courseFilterPanel.querySelectorAll(".filter-option");
+    const linksBtn = document.getElementById("linksBtn");
     const refreshBtn = document.getElementById("refreshBtn");
     const exportBtn = document.getElementById("exportBtn");
 
@@ -538,6 +540,33 @@
       a.download = "registrations.csv";
       a.click();
       URL.revokeObjectURL(url);
+    });
+
+    linksBtn.addEventListener("click", async () => {
+      try {
+        const response = await fetch("/api/admin/course-links");
+        if (!response.ok) {
+          throw new Error("Could not generate course links.");
+        }
+        const payload = await response.json();
+        const lines = [
+          "Course Links (expires in " + payload.expiresInDays + " days):",
+          ""
+        ];
+        payload.links.forEach((entry) => {
+          lines.push(entry.course + ": " + entry.link);
+        });
+        const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "course-links.txt";
+        a.click();
+        URL.revokeObjectURL(url);
+        statusText.textContent = "Course links file downloaded.";
+      } catch (error) {
+        statusText.textContent = error.message;
+      }
     });
 
     setCourseFilter(courseFilter.value);

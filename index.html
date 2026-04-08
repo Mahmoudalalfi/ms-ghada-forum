@@ -1126,6 +1126,17 @@
     let pointerX = 0;
     let pointerY = 0;
     let animationQueued = false;
+    let inviteCourseSlug = "";
+    let inviteToken = "";
+    const courseSlugToName = {
+      "edexcel-online": "EDEXCEL ONLINE",
+      "edexcel-physical": "EDEXCEL PHYSICAL",
+      "camb-physical": "CAMB PHYSICAL",
+      "camb-online": "CAMB ONLINE",
+      "pre-ig-camb": "PRE IG CAMB",
+      "pre-ig-edexcel": "PRE IG EDEXCEL",
+      "as": "AS"
+    };
 
     const observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -1227,12 +1238,47 @@
       fieldGrid.classList.toggle("locked", !unlocked);
     }
 
+    function applyInviteLinkLock() {
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      if (pathParts[0] !== "join" || !pathParts[1]) {
+        errorMessage.textContent = "Use your private course invite link to register.";
+        errorMessage.classList.add("show");
+        return;
+      }
+
+      const courseSlug = pathParts[1].toLowerCase();
+      const token = new URLSearchParams(window.location.search).get("t") || "";
+      const lockedCourseName = courseSlugToName[courseSlug];
+
+      if (!lockedCourseName || !token) {
+        errorMessage.textContent = "This invite link is invalid. Please request a new course link.";
+        errorMessage.classList.add("show");
+        return;
+      }
+
+      inviteCourseSlug = courseSlug;
+      inviteToken = token;
+      setCourseValue(lockedCourseName);
+
+      courseTrigger.disabled = true;
+      courseTrigger.style.opacity = "0.85";
+      courseTrigger.style.cursor = "not-allowed";
+      document.querySelector(".course-hint").textContent = "Course is locked to your invite link.";
+    }
+
     setCourseValue(courseSelect.value.trim());
+    applyInviteLinkLock();
 
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
       successMessage.classList.remove("show");
       errorMessage.classList.remove("show");
+
+      if (!inviteCourseSlug || !inviteToken) {
+        errorMessage.textContent = "A valid course invite link is required.";
+        errorMessage.classList.add("show");
+        return;
+      }
 
       if (!form.checkValidity()) {
         form.reportValidity();
@@ -1252,7 +1298,9 @@
         studentPhone: document.getElementById("studentPhone").value.trim(),
         parentPhone: document.getElementById("parentPhone").value.trim(),
         course: courseSelect.value.trim(),
-        discover: selectedDiscover ? selectedDiscover.value : ""
+        discover: selectedDiscover ? selectedDiscover.value : "",
+        courseSlug: inviteCourseSlug,
+        linkToken: inviteToken
       };
 
       try {

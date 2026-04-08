@@ -15,6 +15,9 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 const isVercel = Boolean(process.env.VERCEL);
 const ADMIN_DASHBOARD_PATH = normalizeAdminPath(process.env.ADMIN_DASHBOARD_PATH || "/teacher-portal-ghada");
+const COURSE_LINK_SECRET = process.env.COURSE_LINK_SECRET || crypto.randomBytes(32).toString("hex");
+const COURSE_LINK_TTL_DAYS = Number.parseInt(process.env.COURSE_LINK_TTL_DAYS || "120", 10);
+const BASE_PUBLIC_URL = normalizeText(process.env.BASE_PUBLIC_URL || "");
 const MIN_SECONDS_BETWEEN_SUBMITS = Number.parseInt(process.env.MIN_SECONDS_BETWEEN_SUBMITS || "8", 10);
 const allowedHosts = (process.env.ALLOWED_HOSTS || "")
   .split(",")
@@ -89,6 +92,19 @@ const allowedCourses = new Set([
   "PRE IG EDEXCEL",
   "AS"
 ]);
+
+const courseSlugToName = {
+  "edexcel-online": "EDEXCEL ONLINE",
+  "edexcel-physical": "EDEXCEL PHYSICAL",
+  "camb-physical": "CAMB PHYSICAL",
+  "camb-online": "CAMB ONLINE",
+  "pre-ig-camb": "PRE IG CAMB",
+  "pre-ig-edexcel": "PRE IG EDEXCEL",
+  "as": "AS"
+};
+const courseNameToSlug = Object.fromEntries(
+  Object.entries(courseSlugToName).map(([slug, name]) => [name, slug])
+);
 
 const allowedDiscover = new Set([
   "INSTGRAM",
@@ -179,6 +195,75 @@ function validateQualityChecks(payload) {
     return { ok: false, message: "Suspicious phone pattern detected." };
   }
   return { ok: true };
+}
+
+function b64urlEncode(input) {
+  const asBuffer = Buffer.isBuffer(input) ? input : Buffer.from(String(input), "utf8");
+  return asBuffer.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function b64urlDecodeToString(input) {
+  const normalized = String(input).replace(/-/g, "+").replace(/_/g, "/");
+  const padLength = (4 - (normalized.length % 4)) % 4;
+  const padded = normalized + "=".repeat(padLength);
+  return Buffer.from(padded, "base64").toString("utf8");
+}
+
+function signTokenPayload(payloadSegment) {
+  return b64urlEncode(
+    crypto.createHmac("sha256", COURSE_LINK_SECRET).update(payloadSegment).digest()
+  );
+}
+
+function createCourseLinkToken(courseSlug) {
+  const expUnix = Math.floor(Date.now() / 1000) + (COURSE_LINK_TTL_DAYS * 24 * 60 * 60);
+  const payloadSegment = b64urlEncode(JSON.stringify({ courseSlug, exp: expUnix }));
+  const signature = signTokenPayload(payloadSegment);
+  return `${payloadSegment}.${signature}`;
+}
+
+function verifyCourseLinkToken(token, expectedSlug) {
+  const raw = String(token || "");
+  const segments = raw.split(".");
+  if (segments.length !== 2) {
+    return { ok: false, reason: "Token format is invalid." };
+  }
+
+  const [payloadSegment, signatureSegment] = segments;
+  const expectedSignature = signTokenPayload(payloadSegment);
+  if (!timingSafeEqualStr(signatureSegment, expectedSignature)) {
+    return { ok: false, reason: "Token signature mismatch." };
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(b64urlDecodeToString(payloadSegment));
+  } catch (_error) {
+    return { ok: false, reason: "Token payload is invalid." };
+  }
+
+  if (!payload || typeof payload !== "object") {
+    return { ok: false, reason: "Token payload is invalid." };
+  }
+
+  if (payload.courseSlug !== expectedSlug) {
+    return { ok: false, reason: "Token is not valid for this course." };
+  }
+
+  if (!Number.isFinite(payload.exp) || payload.exp <= Math.floor(Date.now() / 1000)) {
+    return { ok: false, reason: "Token expired." };
+  }
+
+  return { ok: true, payload };
+}
+
+function getPublicBaseUrl(req) {
+  if (BASE_PUBLIC_URL) {
+    return BASE_PUBLIC_URL.replace(/\/+$/, "");
+  }
+  const proto = req.headers["x-forwarded-proto"] || req.protocol || "https";
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  return `${proto}://${host}`;
 }
 
 function getClientIp(req) {
@@ -401,6 +486,15 @@ app.get("/student", (_req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/join/:courseSlug", (req, res) => {
+  const courseSlug = normalizeText(req.params.courseSlug).toLowerCase();
+  if (!courseSlugToName[courseSlug]) {
+    res.status(404).send("Invalid course link.");
+    return;
+  }
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
 app.get(ADMIN_DASHBOARD_PATH, requireAdminAuth, (_req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
@@ -428,6 +522,22 @@ app.post("/api/admin/logout", (_req, res) => {
   res.json({ message: "Logged out." });
 });
 
+app.get("/api/admin/course-links", adminLimiter, requireAdminAuth, (req, res) => {
+  const base = getPublicBaseUrl(req);
+  const links = Object.entries(courseSlugToName).map(([slug, course]) => {
+    const token = createCourseLinkToken(slug);
+    return {
+      course,
+      slug,
+      link: `${base}/join/${slug}?t=${token}`
+    };
+  });
+  res.json({
+    expiresInDays: COURSE_LINK_TTL_DAYS,
+    links
+  });
+});
+
 app.get("/", (_req, res) => {
   res.redirect("/student");
 });
@@ -448,6 +558,25 @@ app.post("/api/registrations", registerLimiter, requireBrowserSafeRequest, async
     }
 
     const { studentName, studentSchool, studentPhone, parentPhone, course, discover } = validation.data;
+    const submittedCourseSlug = normalizeText(req.body.courseSlug).toLowerCase();
+    const submittedToken = normalizeText(req.body.linkToken);
+    const expectedCourseSlug = courseNameToSlug[course];
+
+    if (!submittedCourseSlug || !submittedToken || !expectedCourseSlug) {
+      res.status(403).json({ error: "A valid course invite link is required." });
+      return;
+    }
+
+    if (submittedCourseSlug !== expectedCourseSlug) {
+      res.status(403).json({ error: "Invite link does not match selected course." });
+      return;
+    }
+
+    const tokenCheck = verifyCourseLinkToken(submittedToken, expectedCourseSlug);
+    if (!tokenCheck.ok) {
+      res.status(403).json({ error: "Course invite link is invalid or expired." });
+      return;
+    }
     const qualityCheck = validateQualityChecks({ studentName, studentSchool, studentPhone, parentPhone });
     if (!qualityCheck.ok) {
       res.status(400).json({ error: qualityCheck.message });
@@ -567,7 +696,7 @@ if (!isVercel) {
         if (allowedHosts.length) {
           console.log(`Allowed hosts: ${allowedHosts.join(", ")}`);
         }
-      console.log(`Teacher dashboard path: ${ADMIN_DASHBOARD_PATH}`);
+        console.log(`Teacher dashboard path: ${ADMIN_DASHBOARD_PATH}`);
       });
     })
     .catch((error) => {

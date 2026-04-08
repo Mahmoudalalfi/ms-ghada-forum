@@ -708,95 +708,6 @@
       opacity: 0;
     }
 
-    .otp-row {
-      display: flex;
-      gap: 10px;
-      align-items: end;
-      flex-wrap: wrap;
-    }
-
-    .otp-row .field {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .otp-btn {
-      border: none;
-      border-radius: 12px;
-      padding: 11px 14px;
-      cursor: pointer;
-      font: inherit;
-      font-weight: 700;
-      color: #3f2f83;
-      background: #f2ecff;
-      border: 1px solid #e2d6ff;
-      min-height: 46px;
-      transition: transform var(--timing-soft), box-shadow var(--timing-soft);
-    }
-
-    .otp-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 16px rgba(72, 41, 173, 0.14);
-    }
-
-    .otp-note {
-      margin: 0;
-      color: #7267a8;
-      font-size: 0.84rem;
-    }
-
-    .otp-targets {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin-top: 2px;
-    }
-
-    .otp-target {
-      position: relative;
-      cursor: pointer;
-    }
-
-    .otp-target input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .otp-target span {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      border: 1px solid #d9c7ff;
-      background: #fcf9ff;
-      color: #4f3e95;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: all var(--timing-soft);
-    }
-
-    .otp-target span::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #bba8f7;
-      transition: all var(--timing-soft);
-    }
-
-    .otp-target input:checked + span {
-      background: linear-gradient(120deg, #6f38ff, #b854e5);
-      color: #ffffff;
-      border-color: transparent;
-      box-shadow: 0 8px 20px rgba(120, 57, 250, 0.26);
-    }
-
-    .otp-target input:checked + span::before {
-      background: #ffffff;
-    }
-
     .note {
       margin: 0;
       color: #6f649e;
@@ -1153,28 +1064,6 @@
           </div>
 
           <div class="field full">
-            <label>Verify Phone With OTP <span class="required">*</span></label>
-            <div class="otp-targets">
-              <label class="otp-target">
-                <input type="radio" name="otpTarget" value="parent" checked required data-lockable>
-                <span>Parent Phone</span>
-              </label>
-              <label class="otp-target">
-                <input type="radio" name="otpTarget" value="student" required data-lockable>
-                <span>Student Phone</span>
-              </label>
-            </div>
-            <div class="otp-row">
-              <div class="field">
-                <label for="otpCode">OTP Code <span class="required">*</span></label>
-                <input id="otpCode" name="otpCode" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="Enter 6-digit code" required data-lockable>
-              </div>
-              <button class="otp-btn" id="sendOtpBtn" type="button" data-lockable>Send OTP</button>
-            </div>
-            <p class="otp-note" id="otpStatusText">Send OTP to verify before final submit.</p>
-          </div>
-
-          <div class="field full">
             <label>HOW DID YOU KNOW ABOUT US ? <span class="required">*</span></label>
             <div class="choices">
               <label class="choice">
@@ -1223,9 +1112,6 @@
     const successMessage = document.getElementById("successMessage");
     const errorMessage = document.getElementById("errorMessage");
     const courseSelect = document.getElementById("courseSelect");
-    const otpCodeInput = document.getElementById("otpCode");
-    const sendOtpBtn = document.getElementById("sendOtpBtn");
-    const otpStatusText = document.getElementById("otpStatusText");
     const customCourse = document.getElementById("customCourse");
     const courseTrigger = document.getElementById("courseTrigger");
     const courseTriggerLabel = document.getElementById("courseTriggerLabel");
@@ -1240,7 +1126,6 @@
     let pointerX = 0;
     let pointerY = 0;
     let animationQueued = false;
-    let otpSessionId = "";
 
     const observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -1342,70 +1227,7 @@
       fieldGrid.classList.toggle("locked", !unlocked);
     }
 
-    async function requestOtp() {
-      const studentPhone = document.getElementById("studentPhone").value.trim();
-      const parentPhone = document.getElementById("parentPhone").value.trim();
-      const course = courseSelect.value.trim();
-      const selectedOtpTarget = form.querySelector("input[name='otpTarget']:checked");
-      const otpTarget = selectedOtpTarget ? selectedOtpTarget.value : "parent";
-
-      if (!studentPhone || !parentPhone || !course) {
-        otpStatusText.textContent = "Enter student phone, parent phone, and course first.";
-        return;
-      }
-
-      sendOtpBtn.disabled = true;
-      sendOtpBtn.textContent = "Sending...";
-      otpStatusText.textContent = "Sending OTP...";
-
-      try {
-        const response = await fetch("/api/otp/request", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest"
-          },
-          body: JSON.stringify({
-            studentPhone,
-            parentPhone,
-            course,
-            otpTarget
-          })
-        });
-
-        const result = await response.json();
-        if (!response.ok) {
-          throw new Error(result.error || "Could not send OTP.");
-        }
-
-        otpSessionId = result.otpSessionId || "";
-        otpStatusText.textContent = result.debugOtp
-          ? "OTP sent (dev mode): " + result.debugOtp
-          : "OTP sent successfully. Please check your phone.";
-      } catch (error) {
-        otpSessionId = "";
-        otpStatusText.textContent = error.message || "Could not send OTP right now.";
-      } finally {
-        sendOtpBtn.disabled = false;
-        sendOtpBtn.textContent = "Send OTP";
-      }
-    }
-
-    function invalidateOtpSession() {
-      otpSessionId = "";
-      if (otpCodeInput.value.trim()) {
-        otpStatusText.textContent = "Phone/course changed. Please request OTP again.";
-      }
-    }
-
     setCourseValue(courseSelect.value.trim());
-    sendOtpBtn.addEventListener("click", requestOtp);
-    document.getElementById("studentPhone").addEventListener("input", invalidateOtpSession);
-    document.getElementById("parentPhone").addEventListener("input", invalidateOtpSession);
-    form.querySelectorAll("input[name='otpTarget']").forEach(function (radio) {
-      radio.addEventListener("change", invalidateOtpSession);
-    });
-    courseSelect.addEventListener("change", invalidateOtpSession);
 
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -1430,9 +1252,7 @@
         studentPhone: document.getElementById("studentPhone").value.trim(),
         parentPhone: document.getElementById("parentPhone").value.trim(),
         course: courseSelect.value.trim(),
-        discover: selectedDiscover ? selectedDiscover.value : "",
-        otpSessionId,
-        otpCode: otpCodeInput.value.trim()
+        discover: selectedDiscover ? selectedDiscover.value : ""
       };
 
       try {
@@ -1453,8 +1273,6 @@
         successMessage.classList.add("show");
         form.reset();
         setCourseValue("");
-        otpSessionId = "";
-        otpStatusText.textContent = "Send OTP to verify before final submit.";
       } catch (error) {
         errorMessage.textContent = error.message || "Something went wrong while saving your registration.";
         errorMessage.classList.add("show");

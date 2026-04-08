@@ -492,6 +492,19 @@ app.get("/join/:courseSlug", (req, res) => {
     res.status(404).send("Invalid course link.");
     return;
   }
+
+  const token = normalizeText(req.query.t);
+  if (!token) {
+    res.status(403).send("Missing invite token.");
+    return;
+  }
+
+  const tokenCheck = verifyCourseLinkToken(token, courseSlug);
+  if (!tokenCheck.ok) {
+    res.status(403).send("Invalid or expired invite link.");
+    return;
+  }
+
   res.sendFile(path.join(__dirname, "index.html"));
 });
 

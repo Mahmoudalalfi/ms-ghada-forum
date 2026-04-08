@@ -14,10 +14,22 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 const isVercel = Boolean(process.env.VERCEL);
+const ADMIN_DASHBOARD_PATH = normalizeAdminPath(process.env.ADMIN_DASHBOARD_PATH || "/teacher-portal-ghada");
 const allowedHosts = (process.env.ALLOWED_HOSTS || "")
   .split(",")
   .map((item) => item.trim().toLowerCase())
   .filter(Boolean);
+
+function normalizeAdminPath(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) {
+    return "/teacher-portal-ghada";
+  }
+  if (!trimmed.startsWith("/")) {
+    return `/${trimmed}`;
+  }
+  return trimmed;
+}
 
 if (!DATABASE_URL) {
   console.error("Missing DATABASE_URL in environment.");
@@ -304,7 +316,12 @@ const adminLimiter = rateLimit({
 
 app.use(express.json({ limit: "12kb", strict: true, type: "application/json" }));
 app.use((req, res, next) => {
-  if (req.path === "/teacher" || req.path === "/admin.html" || req.path.startsWith("/api/registrations")) {
+  if (
+    req.path === ADMIN_DASHBOARD_PATH ||
+    req.path === "/teacher" ||
+    req.path === "/admin.html" ||
+    req.path.startsWith("/api/registrations")
+  ) {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.setHeader("Pragma", "no-cache");
     res.setHeader("Expires", "0");
@@ -316,12 +333,16 @@ app.get("/student", (_req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.get("/teacher", requireAdminAuth, (_req, res) => {
+app.get(ADMIN_DASHBOARD_PATH, requireAdminAuth, (_req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-app.get("/admin.html", requireAdminAuth, (_req, res) => {
-  res.sendFile(path.join(__dirname, "admin.html"));
+app.get("/teacher", (_req, res) => {
+  res.status(404).send("Not found.");
+});
+
+app.get("/admin.html", (_req, res) => {
+  res.status(404).send("Not found.");
 });
 
 app.post("/api/admin/logout", (_req, res) => {
@@ -451,6 +472,7 @@ if (!isVercel) {
         if (allowedHosts.length) {
           console.log(`Allowed hosts: ${allowedHosts.join(", ")}`);
         }
+      console.log(`Teacher dashboard path: ${ADMIN_DASHBOARD_PATH}`);
       });
     })
     .catch((error) => {

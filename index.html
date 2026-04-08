@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ms Ghada Adel | Chemistry Forum 2027</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap");
+
+    :root {
+      --bg: #f7f6fb;
+      --card: rgba(255, 255, 255, 0.9);
+      --card-solid: #ffffff;
+      --text: #211a4e;
+      --muted: #66608f;
+      --accent: #6d4bff;
+      --accent-2: #d35ce4;
+      --accent-3: #b6a6f2;
+      --line: #e5def5;
+      --shadow: 0 18px 34px rgba(57, 38, 128, 0.12);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --timing: 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+      --timing-slow: 620ms cubic-bezier(0.22, 1, 0.36, 1);
+      --timing-soft: 460ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: "Manrope", "Segoe UI", "Inter", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 500px at -20% 0%, rgba(226, 160, 255, 0.12), transparent 60%),
+        radial-gradient(900px 420px at 120% 10%, rgba(120, 124, 255, 0.1), transparent 55%),
+        linear-gradient(180deg, #fcfbff 0%, var(--bg) 52%, #f2eefb 100%);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .floating-orb {
+      position: fixed;
+      border-radius: 999px;
+      filter: blur(10px);
+      pointer-events: none;
+      z-index: 0;
+      animation: float 8s ease-in-out infinite;
+      transition: transform var(--timing-slow);
+      will-change: transform;
+    }
+
+    .orb-1 {
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(206, 124, 244, 0.25), rgba(206, 124, 244, 0));
+      top: 7%;
+      left: -70px;
+    }
+
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(116, 110, 255, 0.24), rgba(116, 110, 255, 0));
+      bottom: 8%;
+      right: -90px;
+      animation-delay: 1.4s;
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.012;
+      background-image: radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.8) 0 0.8px, transparent 1px),
+                        radial-gradient(circle at 80% 60%, rgba(0, 0, 0, 0.8) 0 0.9px, transparent 1px);
+      background-size: 3px 3px, 4px 4px;
+    }
+
+    .social-rail {
+      position: fixed;
+      left: 16px;
+      top: 110px;
+      transform: none;
+      z-index: 25;
+      display: grid;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .social-link {
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      border: 1px solid #e7def8;
+      background: rgba(255, 255, 255, 0.92);
+      color: #332a69;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      box-shadow: 0 10px 20px rgba(55, 37, 128, 0.14);
+      backdrop-filter: blur(8px);
+      transition: transform var(--timing-soft), box-shadow var(--timing-soft), filter var(--timing-soft);
+      pointer-events: auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .social-link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-115%);
+      background: linear-gradient(120deg, transparent 20%, rgba(238, 225, 255, 0.7) 50%, transparent 80%);
+      transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    .social-link:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 14px 28px rgba(55, 37, 128, 0.2);
+      filter: saturate(1.06);
+    }
+
+    .social-link:hover::before {
+      transform: translateX(120%);
+    }
+
+    .social-link i {
+      font-size: 1.55rem;
+      z-index: 1;
+      line-height: 1;
+    }
+
+    .social-link.whatsapp:hover {
+      color: #17b35e;
+    }
+
+    .social-link.instagram:hover {
+      color: #cf2d92;
+    }
+
+    .social-link.tiktok:hover {
+      color: #111111;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(1000px, 92vw);
+      margin: 28px auto 42px;
+      display: grid;
+      gap: 26px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 30px rgba(86, 48, 189, 0.1);
+      animation: slideUp 740ms var(--timing-slow);
+      transform-origin: top center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: 0.2px;
+      color: #26186e;
+      font-family: "Sora", "Manrope", sans-serif;
+    }
+
+    .brand-text .brand-art {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-weight: 600;
+      margin-left: 2px;
+      color: #5a3ab1;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .brand-logo svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 6px 12px rgba(76, 51, 171, 0.22));
+    }
+
+    .badge {
+      background: #f4f1ff;
+      border: 1px solid var(--line);
+      color: #39278f;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid rgba(233, 224, 251, 0.94);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      padding: clamp(22px, 4vw, 44px);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 16px;
+      animation: slideUp 900ms var(--timing-slow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto -10%;
+      width: 40%;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(209, 166, 244, 0.18), transparent 70%);
+      filter: blur(8px);
+      animation: shimmerFloat 7s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .welcome {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      background: #fff8ff;
+      border: 1px solid #f0dfff;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: #6b31ad;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4.4vw, 3rem);
+      line-height: 1.08;
+      color: #25186f;
+      max-width: 14ch;
+      font-family: "Sora", "Manrope", sans-serif;
+      font-weight: 700;
+    }
+
+    .hero-title .word-art {
+      font-family: "Playfair Display", serif;
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      color: #6a49c3;
+    }
+
+    .hero-title .word-script {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: #8f4ab8;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .quote-box {
+      margin-top: 4px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 241, 255, 0.88));
+      border: 1px solid #ece2ff;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      color: #4b378d;
+      font-style: italic;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      transition: transform var(--timing-soft), box-shadow var(--timing-soft), border-color var(--timing-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quote-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-110%);
+      background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.65) 45%, transparent 100%);
+      animation: none;
+    }
+
+    .quote-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(82, 45, 187, 0.12);
+      border-color: #dbcaff;
+    }
+
+    .form-card {
+      background: var(--card-solid);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 3vw, 30px);
+      animation: slideUp 1050ms var(--timing-slow);
+      position: relative;
+      overflow: visible;
+    }
+
+    .form-card::before {
+      content: "";
+      position: absolute;
+      inset: -120px -30px auto auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(125, 92, 224, 0.1), transparent 65%);
+      filter: blur(4px);
+      pointer-events: none;
+    }
+
+    .form-title {
+      margin: 0 0 6px;
+      font-size: 1.4rem;
+      color: #25186f;
+      font-family: "Sora", "Manrope", sans-serif;
+      font-weight: 700;
+    }
+
+    .form-subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 0.93rem;
+      color: #3f2f82;
+      font-weight: 600;
+    }
+
+    .required {
+      color: #b10063;
+      margin-left: 3px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid #ddd0ff;
+      background: #fefeff;
+      border-radius: var(--radius-sm);
+      padding: 12px 13px;
+      font-size: 16px;
+      color: #23175f;
+      outline: none;
+      transition: border-color var(--timing-soft), box-shadow var(--timing-soft), transform var(--timing-soft), opacity var(--timing-soft);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    input::placeholder {
+      color: #998fca;
+    }
+
+    input:disabled,
+    select:disabled {
+      background: #f3f0fb;
+      color: #8f86bb;
+      cursor: not-allowed;
+    }
+
+    .field-grid.locked .field:not(.course-field) {
+      opacity: 0.58;
+      transition: opacity var(--timing);
+    }
+
+    .field-grid:not(.locked) .field {
+      animation: fadeRise 520ms var(--timing-soft);
+    }
+
+    .course-hint {
+      margin: 2px 0 0;
+      color: #7a6cb5;
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+
+    .course-select-native {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .custom-course {
+      position: relative;
+    }
+
+    .course-trigger {
+      width: 100%;
+      border: 1px solid #d8c5ff;
+      border-radius: 999px;
+      min-height: 52px;
+      padding: 9px 16px;
+      background: linear-gradient(130deg, rgba(255, 255, 255, 0.95), rgba(248, 240, 255, 0.95));
+      color: #2e1f76;
+      font: inherit;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: transform var(--timing-soft), box-shadow var(--timing-soft), border-color var(--timing-soft);
+    }
+
+    .course-trigger:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(87, 52, 190, 0.13);
+    }
+
+    .course-trigger:focus-visible {
+      outline: none;
+      border-color: #9f6cff;
+      box-shadow: 0 0 0 3px rgba(159, 108, 255, 0.18);
+    }
+
+    .course-trigger-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .course-trigger-label::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(160deg, #7a43ff, #ff62c3);
+      box-shadow: 0 0 0 4px rgba(129, 72, 255, 0.11);
+      flex-shrink: 0;
+    }
+
+    .course-trigger-placeholder {
+      color: #7d72af;
+      font-weight: 500;
+    }
+
+    .course-trigger-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      border: 1px solid #e7dcff;
+      transition: transform var(--timing-soft), background var(--timing-soft);
+      flex-shrink: 0;
+      color: #3f2a8b;
+      font-size: 0.86rem;
+      line-height: 1;
+    }
+
+    .custom-course.open .course-trigger {
+      border-color: #9f6cff;
+      box-shadow: 0 0 0 3px rgba(159, 108, 255, 0.18);
+    }
+
+    .custom-course.open .course-trigger-arrow {
+      transform: rotate(180deg);
+      background: #f5ecff;
+    }
+
+    .course-panel {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      border-radius: 22px;
+      border: 1px solid #e7dcff;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 34px rgba(72, 41, 173, 0.18);
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px) scale(0.98);
+      transition: opacity var(--timing-soft), transform var(--timing-soft);
+      z-index: 15;
+      max-height: min(320px, 55vh);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .custom-course.open .course-panel {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .course-option {
+      border: 1px solid transparent;
+      background: #fcf9ff;
+      border-radius: 999px;
+      padding: 11px 13px;
+      color: #332274;
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform var(--timing-soft), border-color var(--timing-soft), background var(--timing-soft), box-shadow var(--timing-soft);
+    }
+
+    .course-option::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #bba8f7;
+      flex-shrink: 0;
+      transition: transform var(--timing-soft), background var(--timing-soft);
+    }
+
+    .course-option:hover {
+      transform: translateX(3px);
+      border-color: #dcc9ff;
+      background: #f9f4ff;
+    }
+
+    .course-option.active {
+      border-color: transparent;
+      color: #ffffff;
+      background: linear-gradient(120deg, #7f45ff, #ff62c3);
+      box-shadow: 0 10px 20px rgba(120, 57, 250, 0.22);
+    }
+
+    .course-option.active::before {
+      background: #ffffff;
+      transform: scale(1.1);
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #9f6cff;
+      box-shadow: 0 0 0 3px rgba(159, 108, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .choice {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice span {
+      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid #d9c7ff;
+      color: #4f3e95;
+      background: #fcf9ff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all var(--timing-soft);
+    }
+
+    .choice .chip-icon {
+      font-size: 1rem;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    .choice input:checked + span {
+      background: linear-gradient(120deg, #7f45ff, #ff62c3);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(120, 57, 250, 0.28);
+    }
+
+    .choice input[value="INSTGRAM"]:checked + span {
+      background: linear-gradient(120deg, #6f38ff, #ff3f9e);
+      box-shadow: 0 8px 20px rgba(212, 57, 159, 0.32);
+    }
+
+    .choice input[value="PARENTS"]:checked + span {
+      background: linear-gradient(120deg, #2d8bff, #2ec8ff);
+      box-shadow: 0 8px 20px rgba(47, 153, 255, 0.3);
+    }
+
+    .choice input[value="WHATS APP GROUP"]:checked + span {
+      background: linear-gradient(120deg, #10b663, #20d68e);
+      box-shadow: 0 8px 20px rgba(26, 187, 108, 0.32);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .submit-btn {
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: 700;
+      font-size: 0.98rem;
+      padding: 13px 18px;
+      cursor: pointer;
+      box-shadow: 0 16px 30px rgba(117, 61, 255, 0.32);
+      transition: transform var(--timing-soft), box-shadow var(--timing-soft), filter var(--timing-soft), opacity var(--timing-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 20px 34px rgba(117, 61, 255, 0.34);
+      filter: saturate(1.1);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-125%);
+      background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.55) 50%, transparent 80%);
+      animation: none;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .note {
+      margin: 0;
+      color: #6f649e;
+      font-size: 0.88rem;
+    }
+
+    .success {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #b5f0d7;
+      background: #ecfff5;
+      color: #166647;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-weight: 600;
+    }
+
+    .success.show {
+      display: block;
+      animation: pop 300ms ease-out;
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid #ffc9d6;
+      background: #fff1f5;
+      color: #8f1f45;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-weight: 600;
+    }
+
+    .error.show {
+      display: block;
+      animation: pop 300ms ease-out;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 760ms cubic-bezier(0.22, 1, 0.36, 1), transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes quoteSweep {
+      0% { transform: translateX(-110%); }
+      100% { transform: translateX(130%); }
+    }
+
+    @keyframes buttonSweep {
+      0%, 20% { transform: translateX(-125%); }
+      55% { transform: translateX(130%); }
+      100% { transform: translateX(130%); }
+    }
+
+    @keyframes fadeRise {
+      from {
+        opacity: 0.6;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shimmerFloat {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(8px) translateX(10px); }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: 100%;
+        margin: 14px auto 26px;
+        padding-left: 12px;
+        padding-right: 12px;
+        gap: 14px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+
+      .top-bar {
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 14px;
+      }
+
+      .badge {
+        font-size: 0.8rem;
+      }
+
+      .hero {
+        border-radius: 20px;
+        padding: 18px 16px;
+        gap: 10px;
+      }
+
+      h1 {
+        font-size: clamp(1.45rem, 7vw, 2rem);
+        line-height: 1.15;
+        max-width: 100%;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+      }
+
+      .form-card {
+        border-radius: 20px;
+        padding: 16px 14px;
+      }
+
+      .form-title {
+        font-size: 1.2rem;
+      }
+
+      .form-subtitle {
+        margin-bottom: 14px;
+      }
+
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .submit-btn {
+        width: 100%;
+        min-height: 48px;
+      }
+
+      .note {
+        font-size: 0.84rem;
+      }
+
+      .social-rail {
+        left: auto;
+        right: 8px;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        top: auto;
+        transform: none;
+        gap: 7px;
+      }
+
+      .social-link {
+        width: 42px;
+        height: 42px;
+      }
+
+      .social-link i {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+      }
+
+      .top-bar {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .brand {
+        font-size: 1rem;
+      }
+
+      .brand-logo {
+        width: 30px;
+        height: 30px;
+        font-size: 0.82rem;
+      }
+
+      .badge {
+        display: none;
+      }
+
+      .welcome {
+        font-size: 0.82rem;
+      }
+
+      .quote-box {
+        min-height: 58px;
+        font-size: 0.93rem;
+        padding: 12px 13px;
+      }
+
+      .choices {
+        gap: 8px;
+      }
+
+      .choice span {
+        font-size: 0.84rem;
+        padding: 8px 10px;
+      }
+
+      .course-panel {
+        max-height: min(280px, 48vh);
+      }
+
+      .social-rail {
+        right: 6px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-orb orb-1"></div>
+  <div class="floating-orb orb-2"></div>
+  <div class="grain"></div>
+  <aside class="social-rail" aria-label="Social links">
+    <a class="social-link whatsapp" href="https://wa.me/201002776949" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+      <i class="ph-duotone ph-whatsapp-logo" aria-hidden="true"></i>
+    </a>
+    <a class="social-link instagram" href="https://www.instagram.com/mrs.ghadaomar?igsh=MXAxem00bTR6ODJzZg%3D%3D" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+      <i class="ph-duotone ph-instagram-logo" aria-hidden="true"></i>
+    </a>
+    <a class="social-link tiktok" href="https://www.tiktok.com/@ghadaramadan663?_t=8buXmqwDcXp&_r=1&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnDikYXJdRIxrLMbGPYqNFTm4_ZzcvSuULTwHSJEVWy1RF1g1tm-4Zi6W4ZMo_aem_JG8up3WMUmFxtVwmI7xJiQ" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+      <i class="ph-duotone ph-tiktok-logo" aria-hidden="true"></i>
+    </a>
+  </aside>
+
+  <main class="page">
+    <section class="top-bar reveal">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" role="img" aria-label="GA pencil logo">
+            <defs>
+              <linearGradient id="gaPencilBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFE7B3"/>
+                <stop offset="100%" stop-color="#F7BE74"/>
+              </linearGradient>
+            </defs>
+            <path d="M16 43c8-5 17-8 31-6" stroke="#DCCFFA" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.95"/>
+            <text x="12" y="35" fill="#5B3CC2" font-size="23" font-weight="700" font-family="Sora, Manrope, Arial">GA</text>
+
+            <path d="M44 14v7h-2l-5 11a4 4 0 0 0 3.6 5.6h10.8A4 4 0 0 0 55 32l-5-11h-2v-7z" fill="#F5EEFF" opacity="0.95"/>
+            <path d="M42 31h10" stroke="#8F6CE8" stroke-width="1.5" opacity="0.7"/>
+            <circle cx="40" cy="19" r="1.6" fill="#F2E7FF"/>
+            <circle cx="54" cy="20" r="1.4" fill="#F2E7FF"/>
+            <path d="M41.3 19.3l2.9-1.8M52.8 20l-2.2-1.5" stroke="#EDE4FF" stroke-width="1.1" stroke-linecap="round"/>
+
+            <g transform="rotate(-20 18 16)">
+              <rect x="8" y="14" width="17" height="5.2" rx="2.4" fill="url(#gaPencilBody)"/>
+              <polygon points="25,14 30,16.6 25,19.2" fill="#E2A965"/>
+              <polygon points="30,16.6 32,16.6 30.2,17.8" fill="#2F2558"/>
+              <rect x="8" y="14" width="2.3" height="5.2" rx="1" fill="#F4B0C9"/>
+            </g>
+          </svg>
+        </span>
+        <span class="brand-text">Ms Ghada Adel <span class="brand-art">Chemistry Forum</span></span>
+      </div>
+      <span class="badge">Course Enrollment 2027</span>
+    </section>
+
+    <section class="hero reveal">
+      <span class="welcome">Welcome, future chemist!</span>
+      <h1 class="hero-title">Science-backed <span class="word-art">Chemistry</span> Learning You Can <span class="word-script">Trust</span></h1>
+      <p class="subtitle">Join Ms Ghada Adel's community and reserve your place in the 2027 courses.</p>
+      <div class="quote-box" id="quoteBox"></div>
+    </section>
+
+    <section class="form-card reveal">
+      <h2 class="form-title">Student Registration Form</h2>
+      <p class="form-subtitle">Please complete all required information marked with *</p>
+
+      <form id="registrationForm">
+        <div class="field-grid locked" id="fieldGrid">
+          <div class="field full course-field">
+            <label for="courseSelect">Choose Course <span class="required">*</span></label>
+            <select id="courseSelect" class="course-select-native" name="course" required>
+              <option value="">Select a course</option>
+              <option>EDEXCEL ONLINE</option>
+              <option>EDEXCEL PHYSICAL</option>
+              <option>CAMB PHYSICAL</option>
+              <option>CAMB ONLINE</option>
+              <option>PRE IG CAMB</option>
+              <option>PRE IG EDEXCEL</option>
+              <option>AS</option>
+            </select>
+            <div class="custom-course" id="customCourse">
+              <button id="courseTrigger" class="course-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="course-trigger-label course-trigger-placeholder" id="courseTriggerLabel">Select a course</span>
+                <span class="course-trigger-arrow">⌄</span>
+              </button>
+              <div class="course-panel" id="coursePanel" role="listbox" aria-label="Choose Course">
+                <button class="course-option" type="button" data-value="EDEXCEL ONLINE">EDEXCEL ONLINE</button>
+                <button class="course-option" type="button" data-value="EDEXCEL PHYSICAL">EDEXCEL PHYSICAL</button>
+                <button class="course-option" type="button" data-value="CAMB PHYSICAL">CAMB PHYSICAL</button>
+                <button class="course-option" type="button" data-value="CAMB ONLINE">CAMB ONLINE</button>
+                <button class="course-option" type="button" data-value="PRE IG CAMB">PRE IG CAMB</button>
+                <button class="course-option" type="button" data-value="PRE IG EDEXCEL">PRE IG EDEXCEL</button>
+                <button class="course-option" type="button" data-value="AS">AS</button>
+              </div>
+            </div>
+            <p class="course-hint">Choose the course first to unlock the rest of the form.</p>
+          </div>
+
+          <div class="field">
+            <label for="studentName">Student Name <span class="required">*</span></label>
+            <input id="studentName" name="studentName" type="text" placeholder="Enter full name" required data-lockable>
+          </div>
+
+          <div class="field">
+            <label for="studentSchool">Student School <span class="required">*</span></label>
+            <input id="studentSchool" name="studentSchool" type="text" placeholder="Enter school name" required data-lockable>
+          </div>
+
+          <div class="field">
+            <label for="studentPhone">Student Phone <span class="required">*</span></label>
+            <input id="studentPhone" name="studentPhone" type="tel" placeholder="e.g. 01xxxxxxxxx" required data-lockable>
+          </div>
+
+          <div class="field">
+            <label for="parentPhone">Parents Phone <span class="required">*</span></label>
+            <input id="parentPhone" name="parentPhone" type="tel" placeholder="e.g. 01xxxxxxxxx" required data-lockable>
+          </div>
+
+          <div class="field full">
+            <label>HOW DID YOU KNOW ABOUT US ? <span class="required">*</span></label>
+            <div class="choices">
+              <label class="choice">
+                <input type="radio" name="discover" value="INSTGRAM" required data-lockable>
+                <span><i class="ph-duotone ph-instagram-logo chip-icon" aria-hidden="true"></i>INSTGRAM</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="discover" value="PARENTS" required data-lockable>
+                <span><i class="ph-duotone ph-users-three chip-icon" aria-hidden="true"></i>PARENTS</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="discover" value="WHATS APP GROUP" required data-lockable>
+                <span><i class="ph-duotone ph-whatsapp-logo chip-icon" aria-hidden="true"></i>WHATS APP GROUP</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <p class="note">By submitting, your request is saved for Ms Ghada Adel's team review.</p>
+          <button class="submit-btn" id="submitBtn" type="submit" data-lockable>Submit Registration</button>
+        </div>
+      </form>
+
+      <div class="success" id="successMessage">
+        Registration submitted successfully! We will contact you soon.
+      </div>
+      <div class="error" id="errorMessage"></div>
+    </section>
+  </main>
+
+  <script>
+    const quotes = [
+      "Chemistry is the melodies you can play on vibrating strings. - Michio Kaku",
+      "Science and everyday life cannot and should not be separated. - Rosalind Franklin",
+      "The important thing is to never stop questioning. - Albert Einstein",
+      "Research is what I am doing when I do not know what I am doing. - Wernher von Braun",
+      "In chemistry, there is always room for one more experiment and one more discovery."
+    ];
+
+    const quoteBox = document.getElementById("quoteBox");
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    quoteBox.textContent = randomQuote;
+
+    const form = document.getElementById("registrationForm");
+    const successMessage = document.getElementById("successMessage");
+    const errorMessage = document.getElementById("errorMessage");
+    const courseSelect = document.getElementById("courseSelect");
+    const customCourse = document.getElementById("customCourse");
+    const courseTrigger = document.getElementById("courseTrigger");
+    const courseTriggerLabel = document.getElementById("courseTriggerLabel");
+    const coursePanel = document.getElementById("coursePanel");
+    const courseOptions = coursePanel.querySelectorAll(".course-option");
+    const fieldGrid = document.getElementById("fieldGrid");
+    const lockableElements = form.querySelectorAll("[data-lockable]");
+    const orb1 = document.querySelector(".orb-1");
+    const orb2 = document.querySelector(".orb-2");
+    const socialRail = document.querySelector(".social-rail");
+    const revealElements = document.querySelectorAll(".reveal");
+    let pointerX = 0;
+    let pointerY = 0;
+    let animationQueued = false;
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14 });
+
+    revealElements.forEach(function (element) {
+      observer.observe(element);
+    });
+
+    function applyAmbientMotion() {
+      const scrollShift = Math.min(window.scrollY * 0.03, 18);
+      orb1.style.transform = "translate(" + pointerX * -12 + "px, " + (pointerY * -8 + scrollShift) + "px)";
+      orb2.style.transform = "translate(" + pointerX * 14 + "px, " + (pointerY * 10 - scrollShift * 0.7) + "px)";
+
+      if (socialRail) {
+        socialRail.style.transform = "translateY(" + Math.min(scrollShift, 12) + "px)";
+      }
+      animationQueued = false;
+    }
+
+    function queueAmbientMotion() {
+      if (animationQueued) {
+        return;
+      }
+      animationQueued = true;
+      window.requestAnimationFrame(applyAmbientMotion);
+    }
+
+    window.addEventListener("pointermove", function (event) {
+      pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
+      pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
+      queueAmbientMotion();
+    });
+
+    window.addEventListener("scroll", queueAmbientMotion, { passive: true });
+    queueAmbientMotion();
+
+    function closeCourseDropdown() {
+      customCourse.classList.remove("open");
+      courseTrigger.setAttribute("aria-expanded", "false");
+    }
+
+    function openCourseDropdown() {
+      customCourse.classList.add("open");
+      courseTrigger.setAttribute("aria-expanded", "true");
+    }
+
+    function setCourseValue(value) {
+      courseSelect.value = value;
+      courseTriggerLabel.textContent = value || "Select a course";
+      courseTriggerLabel.classList.toggle("course-trigger-placeholder", value === "");
+
+      courseOptions.forEach(function (optionButton) {
+        optionButton.classList.toggle("active", optionButton.dataset.value === value);
+      });
+
+      updateFormLockState();
+    }
+
+    courseTrigger.addEventListener("click", function () {
+      if (customCourse.classList.contains("open")) {
+        closeCourseDropdown();
+      } else {
+        openCourseDropdown();
+      }
+    });
+
+    courseOptions.forEach(function (optionButton) {
+      optionButton.addEventListener("click", function () {
+        setCourseValue(optionButton.dataset.value);
+        closeCourseDropdown();
+      });
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!customCourse.contains(event.target)) {
+        closeCourseDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeCourseDropdown();
+      }
+    });
+
+    function updateFormLockState() {
+      const unlocked = courseSelect.value.trim() !== "";
+
+      lockableElements.forEach(function (element) {
+        element.disabled = !unlocked;
+      });
+
+      fieldGrid.classList.toggle("locked", !unlocked);
+    }
+
+    setCourseValue(courseSelect.value.trim());
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      successMessage.classList.remove("show");
+      errorMessage.classList.remove("show");
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const selectedDiscover = form.querySelector("input[name='discover']:checked");
+      const submitBtn = document.getElementById("submitBtn");
+      const originalButtonText = submitBtn.textContent;
+
+      submitBtn.textContent = "Submitting...";
+      submitBtn.disabled = true;
+
+      const payload = {
+        studentName: document.getElementById("studentName").value.trim(),
+        studentSchool: document.getElementById("studentSchool").value.trim(),
+        studentPhone: document.getElementById("studentPhone").value.trim(),
+        parentPhone: document.getElementById("parentPhone").value.trim(),
+        course: courseSelect.value.trim(),
+        discover: selectedDiscover ? selectedDiscover.value : ""
+      };
+
+      try {
+        const response = await fetch("/api/registrations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "Could not submit registration.");
+        }
+
+        successMessage.classList.add("show");
+        form.reset();
+        setCourseValue("");
+      } catch (error) {
+        errorMessage.textContent = error.message || "Something went wrong while saving your registration.";
+        errorMessage.classList.add("show");
+      } finally {
+        submitBtn.textContent = originalButtonText;
+        updateFormLockState();
+      }
+
+      setTimeout(function () {
+        successMessage.classList.remove("show");
+      }, 4500);
+    });
+
+    document.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("copy", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("cut", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("dragstart", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("selectstart", function (event) {
+      event.preventDefault();
+    });
+  </script>
+</body>
+</html>

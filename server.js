@@ -15,10 +15,18 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 const isVercel = Boolean(process.env.VERCEL);
 const ADMIN_DASHBOARD_PATH = normalizeAdminPath(process.env.ADMIN_DASHBOARD_PATH || "/teacher-portal-ghada");
+const OTP_SECRET = process.env.OTP_SECRET || crypto.randomBytes(32).toString("hex");
+const OTP_TTL_MINUTES = Number.parseInt(process.env.OTP_TTL_MINUTES || "10", 10);
+const MIN_SECONDS_BETWEEN_SUBMITS = Number.parseInt(process.env.MIN_SECONDS_BETWEEN_SUBMITS || "8", 10);
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || "";
+const TWILIO_FROM_NUMBER = process.env.TWILIO_FROM_NUMBER || "";
 const allowedHosts = (process.env.ALLOWED_HOSTS || "")
   .split(",")
   .map((item) => item.trim().toLowerCase())
   .filter(Boolean);
+
+const lastSubmitByIp = new Map();
 
 function normalizeAdminPath(value) {
   const trimmed = String(value || "").trim();
@@ -62,6 +70,29 @@ async function initDb() {
       parent_phone TEXT NOT NULL,
       course TEXT NOT NULL,
       discover_source TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_registrations_course_student_phone
+    ON registrations (course, student_phone)
+  `);
+
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_registrations_course_parent_phone
+    ON registrations (course, parent_phone)
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS otp_sessions (
+      id TEXT PRIMARY KEY,
+      code_hash TEXT NOT NULL,
+      target_phone TEXT NOT NULL,
+      request_ip TEXT NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      consumed_at TIMESTAMPTZ NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
@@ -130,6 +161,135 @@ function validatePayload(payload) {
     ok: true,
     data: { studentName, studentSchool, studentPhone, parentPhone, course, discover }
   };
+}
+
+function hasSuspiciousText(value) {
+  const lowered = value.toLowerCase();
+  if (/(https?:\/\/|www\.|\.com|<script|<\/|--|;)/i.test(lowered)) {
+    return true;
+  }
+  if (/(.)\1{5,}/.test(lowered)) {
+    return true;
+  }
+  return false;
+}
+
+function hasSuspiciousPhone(value) {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length < 6) {
+    return true;
+  }
+  if (/^(\d)\1+$/.test(digits)) {
+    return true;
+  }
+  if (/0123456|1234567|2345678|3456789/.test(digits)) {
+    return true;
+  }
+  return false;
+}
+
+function validateQualityChecks(payload) {
+  const { studentName, studentSchool, studentPhone, parentPhone } = payload;
+  if (hasSuspiciousText(studentName) || hasSuspiciousText(studentSchool)) {
+    return { ok: false, message: "Suspicious text content detected." };
+  }
+  if (hasSuspiciousPhone(studentPhone) || hasSuspiciousPhone(parentPhone)) {
+    return { ok: false, message: "Suspicious phone pattern detected." };
+  }
+  return { ok: true };
+}
+
+function validateOtpRequestPayload(payload) {
+  const studentPhone = normalizeText(payload.studentPhone);
+  const parentPhone = normalizeText(payload.parentPhone);
+  const course = normalizeText(payload.course);
+  const otpTarget = normalizeText(payload.otpTarget).toLowerCase();
+
+  if (!studentPhone || !parentPhone || !course || !otpTarget) {
+    return { ok: false, message: "Phone numbers, course and OTP target are required." };
+  }
+
+  if (!allowedCourses.has(course)) {
+    return { ok: false, message: "Invalid course selection." };
+  }
+
+  if (!isValidPhone(studentPhone) || !isValidPhone(parentPhone)) {
+    return { ok: false, message: "Invalid phone number format." };
+  }
+
+  if (otpTarget !== "student" && otpTarget !== "parent") {
+    return { ok: false, message: "Invalid OTP target." };
+  }
+
+  const targetPhone = otpTarget === "student" ? studentPhone : parentPhone;
+  return {
+    ok: true,
+    data: { studentPhone, parentPhone, course, otpTarget, targetPhone }
+  };
+}
+
+function generateOtpCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function hashOtp(sessionId, code) {
+  return crypto
+    .createHmac("sha256", OTP_SECRET)
+    .update(`${sessionId}:${code}`)
+    .digest("hex");
+}
+
+function getClientIp(req) {
+  const forwarded = req.headers["x-forwarded-for"];
+  if (typeof forwarded === "string" && forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  return req.ip || "unknown";
+}
+
+function enforceSubmitThrottle(req) {
+  const ip = getClientIp(req);
+  const now = Date.now();
+  const last = lastSubmitByIp.get(ip) || 0;
+  if (now - last < MIN_SECONDS_BETWEEN_SUBMITS * 1000) {
+    return { ok: false, message: "Please wait a few seconds before submitting again." };
+  }
+  lastSubmitByIp.set(ip, now);
+  return { ok: true };
+}
+
+async function sendOtpMessage(phone, code) {
+  const message = `Ms Ghada Forum OTP: ${code}. Expires in ${OTP_TTL_MINUTES} minutes.`;
+  const twilioReady = Boolean(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && TWILIO_FROM_NUMBER);
+
+  if (!twilioReady) {
+    if (isProduction) {
+      throw new Error("OTP provider is not configured.");
+    }
+    return { provider: "debug", delivered: false, debugOtp: code };
+  }
+
+  const params = new URLSearchParams();
+  params.append("To", phone);
+  params.append("From", TWILIO_FROM_NUMBER);
+  params.append("Body", message);
+
+  const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
+  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: params.toString()
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Twilio error: ${text}`);
+  }
+
+  return { provider: "twilio", delivered: true };
 }
 
 function timingSafeEqualStr(a, b) {
@@ -306,6 +466,14 @@ const registerLimiter = rateLimit({
   message: { error: "Too many requests. Please try again later." }
 });
 
+const otpLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many OTP requests. Please try again later." }
+});
+
 const adminLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 250,
@@ -370,6 +538,39 @@ app.get("/index.html", (_req, res) => {
 
 app.use(express.static(__dirname, { index: false }));
 
+app.post("/api/otp/request", otpLimiter, requireBrowserSafeRequest, async (req, res) => {
+  try {
+    const validation = validateOtpRequestPayload(req.body || {});
+    if (!validation.ok) {
+      res.status(400).json({ error: validation.message });
+      return;
+    }
+
+    const { targetPhone } = validation.data;
+    const sessionId = crypto.randomUUID();
+    const code = generateOtpCode();
+    const codeHash = hashOtp(sessionId, code);
+    const requestIp = getClientIp(req);
+
+    await pool.query(
+      `INSERT INTO otp_sessions (id, code_hash, target_phone, request_ip, expires_at)
+       VALUES ($1, $2, $3, $4, NOW() + ($5 || ' minutes')::interval)`,
+      [sessionId, codeHash, targetPhone, requestIp, String(OTP_TTL_MINUTES)]
+    );
+
+    const deliveryResult = await sendOtpMessage(targetPhone, code);
+    res.status(201).json({
+      message: "OTP sent successfully.",
+      otpSessionId: sessionId,
+      expiresInMinutes: OTP_TTL_MINUTES,
+      debugOtp: deliveryResult.debugOtp || undefined
+    });
+  } catch (error) {
+    console.error("Failed to send OTP:", error);
+    res.status(500).json({ error: "Could not send OTP right now." });
+  }
+});
+
 app.post("/api/registrations", registerLimiter, requireBrowserSafeRequest, async (req, res) => {
   try {
     const validation = validatePayload(req.body || {});
@@ -380,6 +581,79 @@ app.post("/api/registrations", registerLimiter, requireBrowserSafeRequest, async
     }
 
     const { studentName, studentSchool, studentPhone, parentPhone, course, discover } = validation.data;
+    const otpSessionId = normalizeText(req.body.otpSessionId);
+    const otpCode = normalizeText(req.body.otpCode);
+
+    if (!otpSessionId || !otpCode || !/^\d{6}$/.test(otpCode)) {
+      res.status(400).json({ error: "OTP verification is required." });
+      return;
+    }
+
+    const qualityCheck = validateQualityChecks({ studentName, studentSchool, studentPhone, parentPhone });
+    if (!qualityCheck.ok) {
+      res.status(400).json({ error: qualityCheck.message });
+      return;
+    }
+
+    const throttleCheck = enforceSubmitThrottle(req);
+    if (!throttleCheck.ok) {
+      res.status(429).json({ error: throttleCheck.message });
+      return;
+    }
+
+    const requestIp = getClientIp(req);
+    const otpRowResult = await pool.query(
+      `SELECT id, code_hash, target_phone, request_ip, expires_at, attempts, consumed_at
+       FROM otp_sessions
+       WHERE id = $1`,
+      [otpSessionId]
+    );
+
+    if (!otpRowResult.rowCount) {
+      res.status(400).json({ error: "Invalid OTP session." });
+      return;
+    }
+
+    const otpSession = otpRowResult.rows[0];
+    const otpExpired = new Date(otpSession.expires_at).getTime() < Date.now();
+    if (otpSession.consumed_at || otpExpired) {
+      res.status(400).json({ error: "OTP session expired. Request a new OTP." });
+      return;
+    }
+
+    if (otpSession.attempts >= 5) {
+      res.status(429).json({ error: "Too many invalid OTP attempts. Request a new OTP." });
+      return;
+    }
+
+    if (otpSession.request_ip !== requestIp) {
+      res.status(403).json({ error: "OTP verification mismatch. Use the same device." });
+      return;
+    }
+
+    if (otpSession.target_phone !== studentPhone && otpSession.target_phone !== parentPhone) {
+      res.status(403).json({ error: "OTP does not match submitted phone numbers." });
+      return;
+    }
+
+    const incomingOtpHash = hashOtp(otpSessionId, otpCode);
+    if (!timingSafeEqualStr(incomingOtpHash, otpSession.code_hash)) {
+      await pool.query("UPDATE otp_sessions SET attempts = attempts + 1 WHERE id = $1", [otpSessionId]);
+      res.status(400).json({ error: "Invalid OTP code." });
+      return;
+    }
+
+    const existingResult = await pool.query(
+      `SELECT id
+       FROM registrations
+       WHERE course = $1 AND (student_phone = $2 OR parent_phone = $3)
+       LIMIT 1`,
+      [course, studentPhone, parentPhone]
+    );
+    if (existingResult.rowCount) {
+      res.status(409).json({ error: "This phone is already registered for the selected course." });
+      return;
+    }
 
     const result = await pool.query(
       `INSERT INTO registrations
@@ -389,11 +663,17 @@ app.post("/api/registrations", registerLimiter, requireBrowserSafeRequest, async
       [studentName, studentSchool, studentPhone, parentPhone, course, discover]
     );
 
+    await pool.query("UPDATE otp_sessions SET consumed_at = NOW() WHERE id = $1", [otpSessionId]);
+
     res.status(201).json({
       message: "Registration saved successfully.",
       registrationId: result.rows[0].id
     });
   } catch (error) {
+    if (error && error.code === "23505") {
+      res.status(409).json({ error: "This phone is already registered for this course." });
+      return;
+    }
     console.error("Failed to save registration:", error);
     res.status(500).json({ error: "Server error while saving registration." });
   }

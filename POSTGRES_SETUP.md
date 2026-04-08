@@ -12,6 +12,10 @@ DATABASE_URL=postgresql://username:password@host:5432/database_name
 DB_SSL=true
 ADMIN_USERNAME=teacher
 ADMIN_PASSWORD=change-this-password
+ADMIN_SESSION_SECRET=replace-with-long-random-secret
+OTP_SECRET=replace-with-long-random-secret
+OTP_TTL_MINUTES=10
+MIN_SECONDS_BETWEEN_SUBMITS=8
 ALLOWED_HOSTS=localhost,127.0.0.1
 ```
 
@@ -53,3 +57,7 @@ Both pages use the same PostgreSQL database, so data is synchronized automatical
   - `ADMIN_PASSWORD`
 - Set a strong `ADMIN_PASSWORD` before production.
 - Configure `ALLOWED_HOSTS` with your real production domain.
+- OTP can be delivered through Twilio if configured:
+  - `TWILIO_ACCOUNT_SID`
+  - `TWILIO_AUTH_TOKEN`
+  - `TWILIO_FROM_NUMBER`

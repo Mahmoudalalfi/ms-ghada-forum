@@ -13,9 +13,12 @@
       --ink-mid: #4a3d6b;
       --muted: #6b6294;
       --cream: #faf7ff;
-      --paper: rgba(255, 255, 255, 0.78);
+      --paper: rgba(255, 255, 255, 0.52);
       --paper-solid: #fffdff;
       --paper-2: #f3edfc;
+      --glass-highlight: rgba(255, 255, 255, 0.65);
+      --glass-edge: rgba(255, 255, 255, 0.82);
+      --glass-blur: 28px;
       --purple: #6d4bff;
       --purple-deep: #4f2fd4;
       --pink: #e879f9;
@@ -133,8 +136,8 @@
       border-radius: 16px;
       border: 1px solid rgba(255, 255, 255, 0.65);
       background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(22px) saturate(1.3);
+      -webkit-backdrop-filter: blur(22px) saturate(1.3);
       color: var(--purple-deep);
       display: grid;
       place-items: center;
@@ -198,13 +201,21 @@
       justify-content: space-between;
       gap: 14px;
       flex-wrap: wrap;
-      background: var(--paper);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.85);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.72) 0%,
+        rgba(255, 255, 255, 0.42) 50%,
+        rgba(250, 245, 255, 0.55) 100%
+      );
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+      border: 1px solid var(--glass-edge);
       border-radius: var(--radius-lg);
       padding: 16px 22px;
-      box-shadow: var(--shadow);
+      box-shadow:
+        var(--shadow),
+        inset 0 1px 0 var(--glass-highlight),
+        inset 0 -1px 0 rgba(109, 75, 255, 0.06);
       animation: slideUp 800ms var(--ease-out-smooth);
       transform-origin: top center;
       position: relative;
@@ -272,13 +283,21 @@
     }
 
     .course-regulations {
-      background: var(--paper);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(255, 255, 255, 0.38) 45%,
+        rgba(253, 244, 255, 0.5) 100%
+      );
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+      border: 1px solid var(--glass-edge);
       border-radius: var(--radius-lg);
       padding: clamp(18px, 3vw, 28px);
-      box-shadow: var(--shadow);
+      box-shadow:
+        var(--shadow),
+        inset 0 1px 0 var(--glass-highlight),
+        inset 0 -1px 0 rgba(217, 70, 239, 0.05);
       animation: slideUp 880ms var(--ease-out-smooth);
       position: relative;
       transition: transform var(--timing-soft), box-shadow var(--timing-soft);
@@ -341,13 +360,21 @@
     }
 
     .hero {
-      background: var(--paper);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.68) 0%,
+        rgba(255, 255, 255, 0.4) 40%,
+        rgba(252, 240, 255, 0.52) 100%
+      );
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.28);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.28);
+      border: 1px solid var(--glass-edge);
       border-radius: var(--radius-lg);
       padding: clamp(24px, 4vw, 40px);
-      box-shadow: var(--shadow);
+      box-shadow:
+        var(--shadow),
+        inset 0 1px 0 var(--glass-highlight),
+        inset 0 -1px 0 rgba(109, 75, 255, 0.05);
       animation: slideUp 920ms var(--ease-out-smooth);
       position: relative;
       overflow: hidden;
@@ -409,81 +436,53 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      min-height: 200px;
+      gap: 18px;
+      min-height: 220px;
     }
 
-    .bond-diagram {
+    .hero-pencil-glass {
       position: relative;
-      width: 220px;
-      height: 200px;
-    }
-
-    .bond-diagram .node {
-      position: absolute;
-      width: 44px;
-      height: 44px;
+      width: min(220px, 72vw);
+      aspect-ratio: 1;
       border-radius: 50%;
-      border: 2px solid rgba(109, 75, 255, 0.45);
-      background: linear-gradient(145deg, #fff, var(--paper-2));
-      box-shadow: 0 10px 24px rgba(109, 75, 255, 0.12);
-      transition: transform var(--timing-soft), box-shadow var(--timing-soft);
+      display: grid;
+      place-items: center;
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.22) 45%,
+        rgba(250, 232, 255, 0.35) 100%
+      );
+      backdrop-filter: blur(32px) saturate(1.4);
+      -webkit-backdrop-filter: blur(32px) saturate(1.4);
+      border: 1px solid var(--glass-edge);
+      box-shadow:
+        0 20px 48px rgba(109, 75, 255, 0.14),
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        inset 0 2px 0 rgba(255, 255, 255, 0.75);
+      animation: pencilOrbFloat 6s ease-in-out infinite;
     }
 
-    .bond-diagram .node.center {
-      width: 56px;
-      height: 56px;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      border-width: 3px;
-      border-color: var(--purple);
-      background: linear-gradient(145deg, rgba(167, 139, 250, 0.2), #fff);
-    }
-
-    .bond-diagram .n1 { left: 50%; top: 0; transform: translateX(-50%); }
-    .bond-diagram .n3 { left: 0; top: 58%; transform: translateY(-50%); }
-    .bond-diagram .n4 { right: 0; top: 58%; transform: translateY(-50%); }
-    .bond-diagram .n5 { left: 50%; bottom: 0; transform: translateX(-50%); }
-
-    .bond-diagram .link {
+    .hero-pencil-glass::after {
+      content: "";
       position: absolute;
-      background: linear-gradient(90deg, var(--purple-deep), var(--pink-deep));
-      height: 3px;
-      border-radius: 2px;
-      opacity: 0.45;
+      inset: 12%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.45), transparent 55%);
+      pointer-events: none;
     }
 
-    .bond-diagram .l1 {
-      left: 50%;
-      top: 22px;
-      width: 2px;
-      height: 48px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, var(--purple-deep), var(--purple));
+    .hero-pencil-svg {
+      position: relative;
+      z-index: 1;
+      width: 68%;
+      height: 68%;
+      filter: drop-shadow(0 14px 28px rgba(91, 60, 194, 0.22));
     }
 
-    .bond-diagram .l2 {
-      left: 22%;
-      top: 52%;
-      width: 28%;
-      transform: translateY(-50%) rotate(-8deg);
-    }
-
-    .bond-diagram .l3 {
-      right: 22%;
-      top: 52%;
-      width: 28%;
-      transform: translateY(-50%) rotate(8deg);
-    }
-
-    .bond-diagram .l4 {
-      left: 50%;
-      bottom: 22px;
-      width: 2px;
-      height: 48px;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, var(--purple), var(--pink-deep));
+    @keyframes pencilOrbFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     .hero-visual-caption {
@@ -544,11 +543,14 @@
 
     .quote-box {
       margin-top: 4px;
-      background: rgba(255, 255, 255, 0.55);
-      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      border: 1px solid var(--glass-edge);
       border-left: 3px solid var(--purple);
       border-radius: var(--radius-md);
       padding: 16px 18px 16px 28px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
       color: var(--ink-mid);
       font-family: var(--font-display);
       font-style: italic;
@@ -579,12 +581,20 @@
     }
 
     .form-card {
-      background: var(--paper);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: linear-gradient(
+        155deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(255, 255, 255, 0.38) 50%,
+        rgba(255, 247, 252, 0.52) 100%
+      );
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+      border: 1px solid var(--glass-edge);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
+      box-shadow:
+        var(--shadow),
+        inset 0 1px 0 var(--glass-highlight),
+        inset 0 -1px 0 rgba(217, 70, 239, 0.05);
       padding: clamp(22px, 3vw, 34px);
       animation: slideUp 1000ms var(--ease-out-smooth);
       position: relative;
@@ -786,11 +796,15 @@
       left: 0;
       right: 0;
       border-radius: var(--radius-md);
-      border: 1px solid var(--line-strong);
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
+      border: 1px solid var(--glass-edge);
+      background: linear-gradient(
+        165deg,
+        rgba(255, 255, 255, 0.82) 0%,
+        rgba(255, 255, 255, 0.5) 100%
+      );
+      backdrop-filter: blur(24px) saturate(1.25);
+      -webkit-backdrop-filter: blur(24px) saturate(1.25);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.65);
       padding: 8px;
       display: grid;
       gap: 6px;
@@ -1115,10 +1129,6 @@
         min-height: 160px;
       }
 
-      .bond-diagram {
-        transform: scale(0.92);
-      }
-
       h1 {
         font-size: clamp(1.45rem, 7vw, 2rem);
         line-height: 1.15;
@@ -1239,6 +1249,10 @@
       .reveal {
         filter: none !important;
       }
+
+      .hero-pencil-glass {
+        animation: none !important;
+      }
     }
   </style>
 </head>
@@ -1307,18 +1321,37 @@
           <div class="quote-box" id="quoteBox"></div>
         </div>
         <div class="hero-visual" aria-hidden="true">
-          <div class="bond-diagram">
-            <span class="link l1"></span>
-            <span class="link l2"></span>
-            <span class="link l3"></span>
-            <span class="link l4"></span>
-            <span class="node n1"></span>
-            <span class="node center"></span>
-            <span class="node n3"></span>
-            <span class="node n4"></span>
-            <span class="node n5"></span>
+          <div class="hero-pencil-glass">
+            <svg class="hero-pencil-svg" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="heroPenBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="40%" stop-color="#faf5ff"/>
+                  <stop offset="100%" stop-color="#fce7f3"/>
+                </linearGradient>
+                <linearGradient id="heroPenStripe" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#6d4bff"/>
+                  <stop offset="100%" stop-color="#e879f9"/>
+                </linearGradient>
+                <linearGradient id="heroPenGraphite" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#5b21b6"/>
+                  <stop offset="100%" stop-color="#d946ef"/>
+                </linearGradient>
+              </defs>
+              <ellipse cx="100" cy="108" rx="68" ry="34" fill="rgba(167, 139, 250, 0.14)" transform="rotate(-26 100 108)"/>
+              <g transform="translate(100,100) rotate(-36)">
+                <rect x="-104" y="-15" width="24" height="30" rx="6" fill="#fbcfe8" stroke="rgba(219, 39, 119, 0.22)" stroke-width="1"/>
+                <rect x="-98" y="-15" width="7" height="30" rx="1" fill="rgba(255, 255, 255, 0.45)"/>
+                <rect x="-82" y="-14" width="16" height="28" rx="3" fill="url(#heroPenStripe)" opacity="0.95"/>
+                <rect x="-66" y="-13" width="96" height="26" rx="7" fill="url(#heroPenBody)" stroke="rgba(109, 75, 255, 0.22)" stroke-width="1"/>
+                <rect x="-58" y="-4" width="80" height="5" rx="2.5" fill="url(#heroPenStripe)" opacity="0.4"/>
+                <polygon points="30,-13 54,0 30,13" fill="#fffbeb" stroke="rgba(251, 191, 36, 0.2)" stroke-width="0.75"/>
+                <polygon points="30,-7 46,0 30,7" fill="url(#heroPenGraphite)"/>
+                <polygon points="46,-2.5 56,0 46,2.5" fill="#312e81"/>
+              </g>
+            </svg>
           </div>
-          <p class="hero-visual-caption">Structure · Precision · Clarity</p>
+          <p class="hero-visual-caption">Write your chapter · 2027</p>
         </div>
       </div>
     </section>

@@ -223,6 +223,62 @@
       font-weight: 600;
     }
 
+    .course-regulations {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(248, 243, 255, 0.94));
+      border: 1px solid rgba(220, 206, 255, 0.95);
+      border-radius: var(--radius-lg);
+      padding: clamp(18px, 3vw, 26px);
+      box-shadow: var(--shadow);
+      animation: slideUp 820ms var(--timing-slow);
+      border-left: 4px solid #7c5ce8;
+    }
+
+    .course-regulations[hidden] {
+      display: none !important;
+    }
+
+    .course-regulations-title {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: "Sora", "Manrope", sans-serif;
+      color: #25186f;
+      letter-spacing: 0.02em;
+    }
+
+    .course-regulations-course {
+      margin: 0 0 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #5a3ab1;
+    }
+
+    .course-regulations-body {
+      display: grid;
+      gap: 14px;
+      color: #3a2f6b;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .course-regulations-body .reg-block h3 {
+      margin: 0 0 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6d4bff;
+    }
+
+    .course-regulations-body ul {
+      margin: 0;
+      padding-left: 1.15rem;
+    }
+
+    .course-regulations-body li {
+      margin: 4px 0;
+    }
+
     .hero {
       background: var(--card);
       border: 1px solid rgba(233, 224, 251, 0.94);
@@ -1007,6 +1063,12 @@
       <span class="badge">Course Enrollment 2027</span>
     </section>
 
+    <section class="course-regulations reveal" id="courseRegulations" hidden aria-live="polite">
+      <h2 class="course-regulations-title">Course schedule &amp; regulations</h2>
+      <p class="course-regulations-course" id="courseRegulationsCourseLabel"></p>
+      <div class="course-regulations-body" id="courseRegulationsBody"></div>
+    </section>
+
     <section class="hero reveal">
       <span class="welcome">Welcome, future chemist!</span>
       <h1 class="hero-title">Science-backed <span class="word-art">Chemistry</span> Learning You Can <span class="word-script">Trust</span></h1>
@@ -1145,6 +1207,60 @@
       "as": "AS"
     };
 
+    const courseNameToSlug = Object.fromEntries(
+      Object.entries(courseSlugToName).map(function (entry) {
+        return [entry[1], entry[0]];
+      })
+    );
+
+    const courseRegulationsBySlug = {
+      "camb-physical":
+        "<div class=\"reg-block\"><h3>Main class (physical)</h3><ul><li>Tuesday at 6pm</li><li>Saturday at 2pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quizzes &amp; paper support</h3><ul><li>Form paper 2 quiz: Wednesday at 9:30pm</li><li>Main quiz: Friday at 2:30pm</li><li>Paper 6 office hour (if needed): Friday at 10am</li></ul></div>",
+      "camb-online":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Sunday at 4pm</li><li>Wednesday at 4pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quizzes &amp; paper support</h3><ul><li>Form paper 2 quiz: Wednesday at 9:30pm</li><li>Main quiz: Friday at 2:30pm</li><li>Paper 6 office hour (if needed): Friday at 10am</li></ul></div>",
+      "edexcel-physical":
+        "<div class=\"reg-block\"><h3>Main class (physical)</h3><ul><li>Saturday at 12pm</li><li>Tuesday at 4pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quiz</h3><ul><li>Friday at 10:30am</li></ul></div>",
+      "edexcel-online":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Sunday at 6pm</li><li>Wednesday at 6pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quiz</h3><ul><li>Friday at 10:30am</li></ul></div>",
+      "pre-ig-camb":
+        "<div class=\"reg-block\"><h3>Main class (physical)</h3><ul><li>Saturday at 4pm</li></ul></div>",
+      "pre-ig-edexcel":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Monday at 6pm</li></ul></div>",
+      "as":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Monday at 4pm</li><li>Thursday at 4pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hour (Patricia)</h3><ul><li>Saturday at 9:30pm</li><li>Friday at 9:30pm</li></ul></div>"
+    };
+
+    const courseRegulationsEl = document.getElementById("courseRegulations");
+    const courseRegulationsCourseLabel = document.getElementById("courseRegulationsCourseLabel");
+    const courseRegulationsBody = document.getElementById("courseRegulationsBody");
+
+    function updateCourseRegulations() {
+      const courseName = courseSelect.value.trim();
+      const slug = courseNameToSlug[courseName];
+      const html = slug ? courseRegulationsBySlug[slug] : "";
+
+      if (!html) {
+        courseRegulationsEl.hidden = true;
+        courseRegulationsCourseLabel.textContent = "";
+        courseRegulationsBody.innerHTML = "";
+        return;
+      }
+
+      courseRegulationsEl.hidden = false;
+      courseRegulationsCourseLabel.textContent = courseName;
+      courseRegulationsBody.innerHTML = html;
+      courseRegulationsEl.classList.add("is-visible");
+    }
+
     const observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -1206,6 +1322,7 @@
       });
 
       updateFormLockState();
+      updateCourseRegulations();
     }
 
     courseTrigger.addEventListener("click", function () {

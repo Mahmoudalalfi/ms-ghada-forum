@@ -27,16 +27,17 @@
       --accent-2: #d946ef;
       --line: rgba(109, 75, 255, 0.12);
       --line-strong: rgba(109, 75, 255, 0.22);
-      --shadow: 0 28px 60px rgba(76, 42, 168, 0.1);
-      --shadow-tight: 0 14px 36px rgba(76, 42, 168, 0.08);
-      --shadow-hover: 0 36px 72px rgba(109, 75, 255, 0.14);
-      --radius-lg: 24px;
-      --radius-md: 16px;
+      --shadow: 0 32px 64px rgba(76, 42, 168, 0.09), 0 12px 24px rgba(76, 42, 168, 0.05);
+      --shadow-tight: 0 16px 40px rgba(76, 42, 168, 0.07), 0 4px 12px rgba(109, 75, 255, 0.04);
+      --shadow-hover: 0 44px 88px rgba(109, 75, 255, 0.13), 0 16px 32px rgba(217, 70, 239, 0.06);
+      --radius-lg: 28px;
+      --radius-md: 18px;
       --radius-sm: 12px;
       --ease-out-smooth: cubic-bezier(0.33, 1, 0.68, 1);
-      --timing: 280ms var(--ease-out-smooth);
-      --timing-slow: 720ms var(--ease-out-smooth);
-      --timing-soft: 520ms var(--ease-out-smooth);
+      --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+      --timing: 320ms var(--ease-premium);
+      --timing-slow: 780ms var(--ease-premium);
+      --timing-soft: 560ms var(--ease-premium);
       --font-display: "Fraunces", "Georgia", serif;
       --font-ui: "Outfit", "Segoe UI", system-ui, sans-serif;
     }
@@ -58,6 +59,8 @@
       padding: 0;
       min-height: 100%;
       font-family: var(--font-ui);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       color: var(--ink);
       background-color: #f0ecfb;
       background-image:
@@ -77,6 +80,30 @@
       z-index: 0;
       opacity: 0.5;
       background: radial-gradient(ellipse 100% 80% at 50% 50%, transparent 0%, rgba(255, 255, 255, 0.4) 100%);
+    }
+
+    .ambient-bloom {
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 20% 30%, rgba(167, 139, 250, 0.22), transparent 55%),
+        radial-gradient(ellipse 45% 45% at 85% 20%, rgba(244, 114, 182, 0.16), transparent 50%),
+        radial-gradient(ellipse 60% 50% at 60% 90%, rgba(192, 132, 252, 0.12), transparent 55%);
+      animation: ambientDrift 28s ease-in-out infinite alternate;
+      will-change: transform, opacity;
+    }
+
+    @keyframes ambientDrift {
+      0% {
+        opacity: 0.85;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(2%, -1.5%) scale(1.04);
+      }
     }
 
     .floating-orb {
@@ -190,9 +217,52 @@
       position: relative;
       z-index: 1;
       width: min(1040px, 92vw);
-      margin: 28px auto 48px;
+      margin: 32px auto 56px;
       display: grid;
-      gap: 24px;
+      gap: clamp(22px, 3vw, 34px);
+    }
+
+    .panel-rim {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .panel-rim::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(167, 139, 250, 0.45) 42%,
+        rgba(244, 114, 182, 0.35) 78%,
+        rgba(255, 255, 255, 0.75) 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.55;
+    }
+
+    .top-bar .brand,
+    .top-bar .badge {
+      position: relative;
+      z-index: 2;
+    }
+
+    .course-regulations > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    .form-card > * {
+      position: relative;
+      z-index: 2;
     }
 
     .top-bar {
@@ -216,14 +286,13 @@
         var(--shadow),
         inset 0 1px 0 var(--glass-highlight),
         inset 0 -1px 0 rgba(109, 75, 255, 0.06);
-      animation: slideUp 800ms var(--ease-out-smooth);
       transform-origin: top center;
       position: relative;
       transition: transform var(--timing-soft), box-shadow var(--timing-soft);
     }
 
     .top-bar:hover {
-      transform: translateY(-2px);
+      transform: translateY(-3px);
       box-shadow: var(--shadow-hover);
     }
 
@@ -298,13 +367,12 @@
         var(--shadow),
         inset 0 1px 0 var(--glass-highlight),
         inset 0 -1px 0 rgba(217, 70, 239, 0.05);
-      animation: slideUp 880ms var(--ease-out-smooth);
       position: relative;
       transition: transform var(--timing-soft), box-shadow var(--timing-soft);
     }
 
     .course-regulations:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
 
@@ -375,14 +443,13 @@
         var(--shadow),
         inset 0 1px 0 var(--glass-highlight),
         inset 0 -1px 0 rgba(109, 75, 255, 0.05);
-      animation: slideUp 920ms var(--ease-out-smooth);
       position: relative;
       overflow: hidden;
       transition: transform var(--timing-soft), box-shadow var(--timing-soft);
     }
 
     .hero:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
 
@@ -390,6 +457,7 @@
       content: "";
       position: absolute;
       inset: 0;
+      z-index: 0;
       background:
         radial-gradient(ellipse 55% 70% at 100% 0%, rgba(167, 139, 250, 0.14), transparent 55%),
         radial-gradient(ellipse 45% 50% at 0% 100%, rgba(244, 114, 182, 0.1), transparent 50%);
@@ -409,11 +477,12 @@
       letter-spacing: -0.06em;
       pointer-events: none;
       user-select: none;
+      z-index: 0;
     }
 
     .hero-inner {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       display: grid;
       gap: 28px;
       align-items: center;
@@ -428,7 +497,56 @@
 
     .hero-copy {
       display: grid;
-      gap: 14px;
+      gap: 16px;
+    }
+
+    .hero .hero-copy > * {
+      opacity: 0;
+      transform: translateY(22px);
+      filter: blur(6px);
+      transition:
+        opacity 1s var(--ease-premium),
+        transform 1s var(--ease-premium),
+        filter 1s var(--ease-premium);
+    }
+
+    .hero.reveal.is-visible .hero-copy > * {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .hero.reveal.is-visible .welcome {
+      transition-delay: 0.1s;
+    }
+
+    .hero.reveal.is-visible .hero-title {
+      transition-delay: 0.2s;
+    }
+
+    .hero.reveal.is-visible .subtitle {
+      transition-delay: 0.3s;
+    }
+
+    .hero.reveal.is-visible .quote-box {
+      transition-delay: 0.4s;
+    }
+
+    .hero .hero-visual {
+      opacity: 0;
+      transform: translateY(20px) scale(0.97);
+      filter: blur(5px);
+      transition:
+        opacity 1.05s var(--ease-premium),
+        transform 1.05s var(--ease-premium),
+        filter 1.05s var(--ease-premium);
+    }
+
+    .hero.reveal.is-visible .hero-visual {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+      transition-delay: 0.26s;
     }
 
     .hero-visual {
@@ -596,14 +714,13 @@
         inset 0 1px 0 var(--glass-highlight),
         inset 0 -1px 0 rgba(217, 70, 239, 0.05);
       padding: clamp(22px, 3vw, 34px);
-      animation: slideUp 1000ms var(--ease-out-smooth);
       position: relative;
       overflow: visible;
       transition: transform var(--timing-soft), box-shadow var(--timing-soft);
     }
 
     .form-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
 
@@ -1023,24 +1140,41 @@
     }
 
     .reveal {
+      --reveal-delay: 0ms;
       opacity: 0;
-      transform: translateY(28px);
-      filter: blur(4px);
+      transform: translateY(32px) scale(0.992);
+      filter: blur(5px);
       transition:
-        opacity 900ms var(--ease-out-smooth),
-        transform 900ms var(--ease-out-smooth),
-        filter 900ms var(--ease-out-smooth);
+        opacity 1050ms var(--ease-premium) var(--reveal-delay),
+        transform 1050ms var(--ease-premium) var(--reveal-delay),
+        filter 950ms var(--ease-premium) var(--reveal-delay);
     }
 
     .reveal.is-visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
       filter: blur(0);
+    }
+
+    .reveal-d0 {
+      --reveal-delay: 0ms;
+    }
+
+    .reveal-d1 {
+      --reveal-delay: 100ms;
+    }
+
+    .reveal-d2 {
+      --reveal-delay: 200ms;
+    }
+
+    .reveal-d3 {
+      --reveal-delay: 300ms;
     }
 
     @keyframes float {
       0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-16px) scale(1.02); }
+      50% { transform: translateY(-18px) scale(1.02); }
     }
 
     @keyframes slideUp {
@@ -1127,6 +1261,15 @@
 
       .hero-visual {
         min-height: 160px;
+      }
+
+      .reveal {
+        filter: none !important;
+      }
+
+      .hero .hero-copy > *,
+      .hero .hero-visual {
+        filter: none !important;
       }
 
       h1 {
@@ -1253,12 +1396,24 @@
       .hero-pencil-glass {
         animation: none !important;
       }
+
+      .ambient-bloom {
+        animation: none !important;
+      }
+
+      .hero .hero-copy > *,
+      .hero .hero-visual {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
 <body>
   <div class="floating-orb orb-1"></div>
   <div class="floating-orb orb-2"></div>
+  <div class="ambient-bloom" aria-hidden="true"></div>
   <div class="grain"></div>
   <aside class="social-rail" aria-label="Social links">
     <a class="social-link whatsapp" href="https://wa.me/201002776949" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
@@ -1273,7 +1428,7 @@
   </aside>
 
   <main class="page">
-    <section class="top-bar reveal">
+    <section class="top-bar reveal reveal-d0 panel-rim">
       <div class="brand">
         <span class="brand-logo" aria-hidden="true">
           <svg viewBox="0 0 64 64" role="img" aria-label="GA pencil logo">
@@ -1305,13 +1460,13 @@
       <span class="badge">Course Enrollment 2027</span>
     </section>
 
-    <section class="course-regulations reveal" id="courseRegulations" hidden aria-live="polite">
+    <section class="course-regulations reveal reveal-d1 panel-rim" id="courseRegulations" hidden aria-live="polite">
       <h2 class="course-regulations-title">Course schedule &amp; regulations</h2>
       <p class="course-regulations-course" id="courseRegulationsCourseLabel"></p>
       <div class="course-regulations-body" id="courseRegulationsBody"></div>
     </section>
 
-    <section class="hero reveal">
+    <section class="hero reveal reveal-d2 panel-rim">
       <div class="hero-year" aria-hidden="true">2027</div>
       <div class="hero-inner">
         <div class="hero-copy">
@@ -1356,7 +1511,7 @@
       </div>
     </section>
 
-    <section class="form-card reveal">
+    <section class="form-card reveal reveal-d3 panel-rim">
       <h2 class="form-title">Student Registration Form</h2>
       <p class="form-subtitle">Please complete all required information marked with *</p>
 
@@ -1548,7 +1703,7 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.14 });
+    }, { root: null, rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
 
     revealElements.forEach(function (element) {
       observer.observe(element);

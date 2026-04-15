@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal | Mrs Ghada Omar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/admin-ui.css">
+</head>
+<body>
+  <main class="wrap">
+    <div class="card">
+      <div class="card-inner top-bar">
+        <div class="brand">
+          <div class="brand-title">Mrs Ghada Omar<span>Teacher Portal</span></div>
+        </div>
+        <div class="top-actions">
+          <a href="/index.html" class="btn-ghost-nav">&larr; Registration Form</a>
+          <button id="changePasswordBtn" type="button" class="btn btn-secondary">Change Password</button>
+          <button id="logoutBtn" type="button" class="btn btn-secondary">Log out</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-inner">
+        <div class="controls">
+          <input id="searchInput" type="text" placeholder="Search by name, school or phone&hellip;">
+          <select id="courseFilter" class="native-select-hidden">
+            <option value="">All Courses</option>
+            <option>EDEXCEL ONLINE</option><option>EDEXCEL PHYSICAL</option>
+            <option>CAMB PHYSICAL</option><option>CAMB ONLINE</option>
+            <option>PRE IG CAMB</option><option>PRE IG EDEXCEL</option>
+            <option>AS</option>
+          </select>
+          <div class="filter-select" id="courseFilterSelect">
+            <button id="courseFilterTrigger" class="filter-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span id="courseFilterLabel">All Courses</span><span class="arrow"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+            <div class="filter-panel" id="courseFilterPanel" role="listbox">
+              <button type="button" class="filter-option active" data-value="">All Courses</button>
+              <button type="button" class="filter-option" data-value="EDEXCEL ONLINE">EDEXCEL ONLINE</button>
+              <button type="button" class="filter-option" data-value="EDEXCEL PHYSICAL">EDEXCEL PHYSICAL</button>
+              <button type="button" class="filter-option" data-value="CAMB PHYSICAL">CAMB PHYSICAL</button>
+              <button type="button" class="filter-option" data-value="CAMB ONLINE">CAMB ONLINE</button>
+              <button type="button" class="filter-option" data-value="PRE IG CAMB">PRE IG CAMB</button>
+              <button type="button" class="filter-option" data-value="PRE IG EDEXCEL">PRE IG EDEXCEL</button>
+              <button type="button" class="filter-option" data-value="AS">AS</button>
+            </div>
+          </div>
+          <button id="linksBtn" class="btn btn-secondary" type="button">Course Links</button>
+          <button id="refreshBtn" class="btn btn-secondary" type="button">Refresh</button>
+          <button id="exportBtn" class="btn btn-primary" type="button">Export CSV</button>
+        </div>
+        <div class="status-row">
+          <p class="status" id="statusText">Loading&hellip;</p>
+          <div class="pagination" id="pagination" hidden>
+            <button class="btn btn-secondary page-btn" id="prevBtn" type="button">&larr; Prev</button>
+            <span class="page-info" id="pageInfo"></span>
+            <button class="btn btn-secondary page-btn" id="nextBtn" type="button">Next &rarr;</button>
+            <div class="filter-select" id="pageSizeSelectWrap">
+              <button id="pageSizeTrigger" class="filter-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span id="pageSizeLabel">50 / page</span><span class="arrow"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+              <div class="filter-panel filter-panel-up" id="pageSizePanel" role="listbox">
+                <button type="button" class="filter-option" data-value="25">25 / page</button>
+                <button type="button" class="filter-option active" data-value="50">50 / page</button>
+                <button type="button" class="filter-option" data-value="100">100 / page</button>
+                <button type="button" class="filter-option" data-value="200">200 / page</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>ID</th><th>Student Name</th><th>School</th>
+              <th>Student Phone</th><th>Parent Phone</th><th>Course</th>
+              <th>How They Found Us</th><th>Registered At</th><th>Action</th>
+            </tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="emptyState" hidden>No registrations yet.</div>
+      </div>
+    </div>
+  </main>
+  <!-- Change Password Modal -->
+  <div id="cpModal" class="cp-modal-backdrop" hidden>
+    <div class="cp-modal" role="dialog" aria-modal="true" aria-labelledby="cpModalTitle">
+      <div class="cp-modal-header">
+        <span id="cpModalTitle" class="cp-modal-title">Change Password</span>
+        <button id="cpModalClose" type="button" class="cp-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="cp-modal-body">
+        <div class="cp-field">
+          <label for="cpCurrent">Current Password</label>
+          <input id="cpCurrent" type="password" autocomplete="current-password" placeholder="Enter current password">
+        </div>
+        <div class="cp-field">
+          <label for="cpNew">New Password</label>
+          <input id="cpNew" type="password" autocomplete="new-password" placeholder="Min 12 chars, uppercase, number, symbol">
+        </div>
+        <div class="cp-field">
+          <label for="cpConfirm">Confirm New Password</label>
+          <input id="cpConfirm" type="password" autocomplete="new-password" placeholder="Repeat new password">
+        </div>
+        <p class="cp-error" id="cpError" hidden></p>
+        <p class="cp-success" id="cpSuccess" hidden></p>
+      </div>
+      <div class="cp-modal-footer">
+        <button id="cpCancelBtn" type="button" class="btn btn-secondary">Cancel</button>
+        <button id="cpSubmitBtn" type="button" class="btn btn-primary">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .cp-modal-backdrop {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(15,10,30,0.55);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .cp-modal-backdrop[hidden] { display: none; }
+    .cp-modal {
+      width: min(440px, 100%);
+      background: rgba(255,255,255,0.97);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(139,92,246,0.2);
+      border: 1.5px solid rgba(192,132,252,0.3);
+      overflow: hidden;
+      animation: fade-up 0.25s var(--ease-out) both;
+    }
+    .cp-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid rgba(167,139,250,0.15);
+    }
+    .cp-modal-title {
+      font-family: var(--font-display); font-size: 1.15rem;
+      font-weight: 600; font-style: italic; color: var(--text);
+    }
+    .cp-close {
+      background: none; border: none; font-size: 1.4rem; line-height: 1;
+      color: var(--text-muted); cursor: pointer; padding: 2px 6px; border-radius: 6px;
+    }
+    .cp-close:hover { background: rgba(167,139,250,0.12); }
+    .cp-modal-body { padding: 20px 24px; display: grid; gap: 14px; }
+    .cp-field { display: grid; gap: 6px; }
+    .cp-field label {
+      font-family: var(--font-ui); font-size: 0.8rem;
+      font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .cp-field input {
+      width: 100%; border: 1px solid rgba(167,139,250,0.3); border-radius: 999px;
+      padding: 11px 18px; font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+      color: var(--text); background: rgba(255,255,255,0.9); outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      -webkit-user-select: text; user-select: text;
+    }
+    .cp-field input:focus { border-color: var(--purple-600); box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+    .cp-error   { font-size: 0.84rem; font-weight: 600; color: var(--danger); padding: 0 4px; }
+    .cp-success { font-size: 0.84rem; font-weight: 600; color: #059669; padding: 0 4px; }
+    .cp-modal-footer {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding: 16px 24px 20px;
+      border-top: 1px solid rgba(167,139,250,0.15);
+    }
+  </style>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

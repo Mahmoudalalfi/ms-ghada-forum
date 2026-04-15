@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mrs Ghada Omar | Chemistry Forum 2027</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500;1,9..144,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/forum-ui.css">
+
+</head>
+<body>
+  <aside class="social-rail" aria-label="Social links">
+    <a class="social-link whatsapp" href="https://wa.me/201002776949" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+      <i class="ph-duotone ph-whatsapp-logo" aria-hidden="true"></i>
+    </a>
+    <a class="social-link instagram" href="https://www.instagram.com/mrs.ghadaomar?igsh=MXAxem00bTR6ODJzZg%3D%3D" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+      <i class="ph-duotone ph-instagram-logo" aria-hidden="true"></i>
+    </a>
+    <a class="social-link tiktok" href="https://www.tiktok.com/@ghadaramadan663?_t=8buXmqwDcXp&_r=1&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGnDikYXJdRIxrLMbGPYqNFTm4_ZzcvSuULTwHSJEVWy1RF1g1tm-4Zi6W4ZMo_aem_JG8up3WMUmFxtVwmI7xJiQ" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+      <i class="ph-duotone ph-tiktok-logo" aria-hidden="true"></i>
+    </a>
+  </aside>
+
+  <main class="page">
+    <section class="top-bar reveal reveal-d0">
+      <div class="top-bar-inner">
+      <div class="brand">
+        <span class="brand-logo" aria-hidden="true">
+          <img src="/favicon.svg" alt="GA logo" width="40" height="40" style="display:block;">
+        </span>
+        <span class="brand-text">Mrs Ghada Omar <span class="brand-art">Chemistry Forum</span></span>
+      </div>
+      <span class="badge">Course Enrollment 2027</span>
+      </div>
+    </section>
+
+    <section class="course-regulations reveal reveal-d1" id="courseRegulations" hidden aria-live="polite">
+      <div class="course-regulations-inner">
+        <h2 class="course-regulations-title">Course schedule &amp; regulations</h2>
+        <p class="course-regulations-course" id="courseRegulationsCourseLabel"></p>
+        <div class="course-regulations-body" id="courseRegulationsBody"></div>
+      </div>
+    </section>
+
+    <section class="hero reveal reveal-d2">
+      <div class="hero-panel">
+        <div class="hero-panel-inner">
+          <div class="hero-layout">
+            <div class="hero-copy">
+              <span class="welcome">Welcome, future chemist!</span>
+              <h1 class="hero-title">Science-backed <span class="word-art">chemistry</span> learning you can <span class="word-script">trust</span></h1>
+              <p class="subtitle">Join Mrs Ghada Omar's community and reserve your place in the 2027 courses.</p>
+              <div class="quote-box" id="quoteBox"></div>
+            </div>
+            <figure class="hero-visual">
+              <img
+                src="/Hero.png"
+                alt="Mrs Ghada Omar, Chemistry instructor"
+                class="hero-photo"
+                width="640"
+                height="900"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-card reveal reveal-d3">
+      <div class="form-card-inner">
+      <h2 class="form-title">Student Registration Form</h2>
+      <p class="form-subtitle">Please complete all required information marked with *</p>
+
+      <form id="registrationForm">
+        <div class="field-grid locked" id="fieldGrid">
+          <div class="field full course-field">
+            <label for="courseSelect">Choose Course <span class="required">*</span></label>
+            <select id="courseSelect" class="course-select-native" name="course" required>
+              <option value="">Select a course</option>
+              <option>EDEXCEL ONLINE</option>
+              <option>EDEXCEL PHYSICAL</option>
+              <option>CAMB PHYSICAL</option>
+              <option>CAMB ONLINE</option>
+              <option>PRE IG CAMB</option>
+              <option>PRE IG EDEXCEL</option>
+              <option>AS</option>
+            </select>
+            <div class="custom-course" id="customCourse">
+              <button id="courseTrigger" class="course-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="course-trigger-label course-trigger-placeholder" id="courseTriggerLabel">Select a course</span>
+                <span class="course-trigger-arrow">⌄</span>
+              </button>
+              <div class="course-panel" id="coursePanel" role="listbox" aria-label="Choose Course">
+                <button class="course-option" type="button" data-value="EDEXCEL ONLINE">EDEXCEL ONLINE</button>
+                <button class="course-option" type="button" data-value="EDEXCEL PHYSICAL">EDEXCEL PHYSICAL</button>
+                <button class="course-option" type="button" data-value="CAMB PHYSICAL">CAMB PHYSICAL</button>
+                <button class="course-option" type="button" data-value="CAMB ONLINE">CAMB ONLINE</button>
+                <button class="course-option" type="button" data-value="PRE IG CAMB">PRE IG CAMB</button>
+                <button class="course-option" type="button" data-value="PRE IG EDEXCEL">PRE IG EDEXCEL</button>
+                <button class="course-option" type="button" data-value="AS">AS</button>
+              </div>
+            </div>
+            <p class="course-hint">Choose the course first to unlock the rest of the form.</p>
+          </div>
+
+          <div class="field">
+            <label for="studentName">Student Name <span class="required">*</span></label>
+            <input id="studentName" name="studentName" type="text" placeholder="Enter full name" required data-lockable>
+          </div>
+
+          <div class="field">
+            <label for="studentSchool">Student School <span class="required">*</span></label>
+            <input id="studentSchool" name="studentSchool" type="text" placeholder="Enter school name" required data-lockable>
+          </div>
+
+          <div class="field">
+            <label for="studentPhone">Student Phone <span class="required">*</span></label>
+            <input id="studentPhone" name="studentPhone" type="tel" placeholder="e.g. 01xxxxxxxxx" required data-lockable>
+          </div>
+
+          <div class="field">
+            <label for="parentPhone">Parents Phone <span class="required">*</span></label>
+            <input id="parentPhone" name="parentPhone" type="tel" placeholder="e.g. 01xxxxxxxxx" required data-lockable>
+          </div>
+
+          <div class="field full">
+            <label>HOW DID YOU KNOW ABOUT US ? <span class="required">*</span></label>
+            <div class="choices">
+              <label class="choice">
+                <input type="radio" name="discover" value="INSTGRAM" required data-lockable>
+                <span><i class="ph-duotone ph-instagram-logo chip-icon" aria-hidden="true"></i>INSTGRAM</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="discover" value="PARENTS" required data-lockable>
+                <span><i class="ph-duotone ph-users-three chip-icon" aria-hidden="true"></i>PARENTS</span>
+              </label>
+              <label class="choice">
+                <input type="radio" name="discover" value="WHATS APP GROUP" required data-lockable>
+                <span><i class="ph-duotone ph-whatsapp-logo chip-icon" aria-hidden="true"></i>WHATS APP GROUP</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <p class="note">By submitting, your request is saved for Mrs Ghada Omar's team review.</p>
+          <button class="submit-btn" id="submitBtn" type="submit" data-lockable>Submit Registration</button>
+        </div>
+      </form>
+
+      <div class="success" id="successMessage">
+        Registration submitted successfully! We will contact you soon.
+      </div>
+      <div class="error" id="errorMessage"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const quotes = [
+      "Chemistry is the melodies you can play on vibrating strings. - Michio Kaku",
+      "Science and everyday life cannot and should not be separated. - Rosalind Franklin",
+      "The important thing is to never stop questioning. - Albert Einstein",
+      "Research is what I am doing when I do not know what I am doing. - Wernher von Braun",
+      "In chemistry, there is always room for one more experiment and one more discovery."
+    ];
+
+    const quoteBox = document.getElementById("quoteBox");
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    quoteBox.textContent = randomQuote;
+
+    const form = document.getElementById("registrationForm");
+    const successMessage = document.getElementById("successMessage");
+    const errorMessage = document.getElementById("errorMessage");
+    const courseSelect = document.getElementById("courseSelect");
+    const customCourse = document.getElementById("customCourse");
+    const courseTrigger = document.getElementById("courseTrigger");
+    const courseTriggerLabel = document.getElementById("courseTriggerLabel");
+    const coursePanel = document.getElementById("coursePanel");
+    const courseOptions = coursePanel.querySelectorAll(".course-option");
+    const fieldGrid = document.getElementById("fieldGrid");
+    const lockableElements = form.querySelectorAll("[data-lockable]");
+    const socialRail = document.querySelector(".social-rail");
+    const revealElements = document.querySelectorAll(".reveal");
+    let pointerX = 0;
+    let pointerY = 0;
+    let animationQueued = false;
+    let inviteCourseSlug = "";
+    let inviteToken = "";
+    const courseSlugToName = {
+      "edexcel-online": "EDEXCEL ONLINE",
+      "edexcel-physical": "EDEXCEL PHYSICAL",
+      "camb-physical": "CAMB PHYSICAL",
+      "camb-online": "CAMB ONLINE",
+      "pre-ig-camb": "PRE IG CAMB",
+      "pre-ig-edexcel": "PRE IG EDEXCEL",
+      "as": "AS"
+    };
+
+    const courseNameToSlug = Object.fromEntries(
+      Object.entries(courseSlugToName).map(function (entry) {
+        return [entry[1], entry[0]];
+      })
+    );
+
+    const courseRegulationsBySlug = {
+      "camb-physical":
+        "<div class=\"reg-block\"><h3>Main class (physical)</h3><ul><li>Tuesday at 6pm</li><li>Saturday at 2pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quizzes &amp; paper support</h3><ul><li>Form paper 2 quiz: Wednesday at 9:30pm</li><li>Main quiz: Friday at 2:30pm</li><li>Paper 6 office hour (if needed): Friday at 10am</li></ul></div>",
+      "camb-online":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Sunday at 4pm</li><li>Wednesday at 4pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quizzes &amp; paper support</h3><ul><li>Form paper 2 quiz: Wednesday at 9:30pm</li><li>Main quiz: Friday at 2:30pm</li><li>Paper 6 office hour (if needed): Friday at 10am</li></ul></div>",
+      "edexcel-physical":
+        "<div class=\"reg-block\"><h3>Main class (physical)</h3><ul><li>Saturday at 12pm</li><li>Tuesday at 4pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quiz</h3><ul><li>Friday at 10:30am</li></ul></div>",
+      "edexcel-online":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Sunday at 6pm</li><li>Wednesday at 6pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hours</h3><ul><li>Wednesday at 10pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Quiz</h3><ul><li>Friday at 10:30am</li></ul></div>",
+      "pre-ig-camb":
+        "<div class=\"reg-block\"><h3>Main class (physical)</h3><ul><li>Saturday at 4pm</li></ul></div>",
+      "pre-ig-edexcel":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Monday at 6pm</li></ul></div>",
+      "as":
+        "<div class=\"reg-block\"><h3>Main class (online)</h3><ul><li>Monday at 4pm</li><li>Thursday at 4pm</li></ul></div>" +
+        "<div class=\"reg-block\"><h3>Office hour (Patricia)</h3><ul><li>Saturday at 9:30pm</li><li>Friday at 9:30pm</li></ul></div>"
+    };
+
+    const courseRegulationsEl = document.getElementById("courseRegulations");
+    const courseRegulationsCourseLabel = document.getElementById("courseRegulationsCourseLabel");
+    const courseRegulationsBody = document.getElementById("courseRegulationsBody");
+
+    function updateCourseRegulations() {
+      const courseName = courseSelect.value.trim();
+      const slug = courseNameToSlug[courseName];
+      const html = slug ? courseRegulationsBySlug[slug] : "";
+
+      if (!html) {
+        courseRegulationsEl.hidden = true;
+        courseRegulationsCourseLabel.textContent = "";
+        courseRegulationsBody.innerHTML = "";
+        return;
+      }
+
+      courseRegulationsEl.hidden = false;
+      courseRegulationsCourseLabel.textContent = courseName;
+      courseRegulationsBody.innerHTML = html;
+      courseRegulationsEl.classList.add("is-visible");
+    }
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { root: null, rootMargin: "0px", threshold: 0 });
+
+    revealElements.forEach(function (element) {
+      observer.observe(element);
+    });
+
+    // Fallback: ensure all elements become visible even if observer misfires
+    setTimeout(function () {
+      revealElements.forEach(function (el) {
+        el.classList.add("is-visible");
+      });
+    }, 600);
+
+    function applyAmbientMotion() {
+      animationQueued = false;
+    }
+
+    function queueAmbientMotion() {
+      if (animationQueued) {
+        return;
+      }
+      animationQueued = true;
+      window.requestAnimationFrame(applyAmbientMotion);
+    }
+
+    window.addEventListener("pointermove", function (event) {
+      pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
+      pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
+      queueAmbientMotion();
+    });
+
+    window.addEventListener("scroll", queueAmbientMotion, { passive: true });
+    queueAmbientMotion();
+
+    function closeCourseDropdown() {
+      customCourse.classList.remove("open");
+      courseTrigger.setAttribute("aria-expanded", "false");
+    }
+
+    function openCourseDropdown() {
+      customCourse.classList.add("open");
+      courseTrigger.setAttribute("aria-expanded", "true");
+    }
+
+    function setCourseValue(value) {
+      courseSelect.value = value;
+      courseTriggerLabel.textContent = value || "Select a course";
+      courseTriggerLabel.classList.toggle("course-trigger-placeholder", value === "");
+
+      courseOptions.forEach(function (optionButton) {
+        optionButton.classList.toggle("active", optionButton.dataset.value === value);
+      });
+
+      updateFormLockState();
+      updateCourseRegulations();
+    }
+
+    courseTrigger.addEventListener("click", function () {
+      if (customCourse.classList.contains("open")) {
+        closeCourseDropdown();
+      } else {
+        openCourseDropdown();
+      }
+    });
+
+    courseOptions.forEach(function (optionButton) {
+      optionButton.addEventListener("click", function () {
+        setCourseValue(optionButton.dataset.value);
+        closeCourseDropdown();
+      });
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!customCourse.contains(event.target)) {
+        closeCourseDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeCourseDropdown();
+      }
+    });
+
+    function updateFormLockState() {
+      const unlocked = courseSelect.value.trim() !== "";
+
+      lockableElements.forEach(function (element) {
+        element.disabled = !unlocked;
+      });
+
+      fieldGrid.classList.toggle("locked", !unlocked);
+    }
+
+    function lockFormCompletely(message) {
+      lockableElements.forEach(function (element) {
+        element.disabled = true;
+      });
+      fieldGrid.classList.add("locked");
+      courseTrigger.disabled = true;
+      if (message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.add("show");
+      }
+    }
+
+    function applyInviteLinkLock() {
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      if (pathParts[0] !== "join" || !pathParts[1]) {
+        lockFormCompletely("Use your private course invite link to register.");
+        return;
+      }
+
+      const courseSlug = pathParts[1].toLowerCase();
+      const token = new URLSearchParams(window.location.search).get("t") || "";
+      const lockedCourseName = courseSlugToName[courseSlug];
+
+      if (!lockedCourseName || !token) {
+        lockFormCompletely("This invite link is invalid. Please request a new course link.");
+        return;
+      }
+
+      inviteCourseSlug = courseSlug;
+      inviteToken = token;
+      setCourseValue(lockedCourseName);
+
+      courseTrigger.disabled = true;
+      document.querySelector(".course-hint").textContent = "Course is locked to your invite link.";
+    }
+
+    setCourseValue(courseSelect.value.trim());
+    applyInviteLinkLock();
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      successMessage.classList.remove("show");
+      errorMessage.classList.remove("show");
+
+      if (!inviteCourseSlug || !inviteToken) {
+        errorMessage.textContent = "A valid course invite link is required.";
+        errorMessage.classList.add("show");
+        return;
+      }
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const selectedDiscover = form.querySelector("input[name='discover']:checked");
+      const submitBtn = document.getElementById("submitBtn");
+      const originalButtonText = submitBtn.textContent;
+
+      submitBtn.textContent = "Submitting...";
+      submitBtn.disabled = true;
+
+      const payload = {
+        studentName: document.getElementById("studentName").value.trim(),
+        studentSchool: document.getElementById("studentSchool").value.trim(),
+        studentPhone: document.getElementById("studentPhone").value.trim(),
+        parentPhone: document.getElementById("parentPhone").value.trim(),
+        course: courseSelect.value.trim(),
+        discover: selectedDiscover ? selectedDiscover.value : "",
+        courseSlug: inviteCourseSlug,
+        linkToken: inviteToken
+      };
+
+      try {
+        const response = await fetch("/api/registrations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.error || "Could not submit registration.");
+        }
+
+        successMessage.classList.add("show");
+        form.reset();
+        setCourseValue("");
+      } catch (error) {
+        errorMessage.textContent = error.message || "Something went wrong while saving your registration.";
+        errorMessage.classList.add("show");
+      } finally {
+        submitBtn.textContent = originalButtonText;
+        updateFormLockState();
+      }
+
+      setTimeout(function () {
+        successMessage.classList.remove("show");
+      }, 4500);
+    });
+
+    document.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("copy", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("cut", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("dragstart", function (event) {
+      event.preventDefault();
+    });
+
+    document.addEventListener("selectstart", function (event) {
+      event.preventDefault();
+    });
+  </script>
+</body>
+</html>

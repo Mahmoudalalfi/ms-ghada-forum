@@ -261,10 +261,26 @@ linksBtn.addEventListener("click", async function() {
   } catch(err) { statusText.textContent = err.message; }
 });
 
+document.querySelectorAll(".cp-eye").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    var input = document.getElementById(btn.dataset.target);
+    var isText = input.type === "text";
+    input.type = isText ? "password" : "text";
+    btn.classList.toggle("active", !isText);
+    btn.textContent = isText ? "\uD83D\uDE48" : "\uD83D\uDC41";
+  });
+});
+
 function openCpModal() {
   cpCurrent.value = ""; cpNew.value = ""; cpConfirm.value = "";
   cpError.hidden = true; cpSuccess.hidden = true;
   cpModal.hidden = false;
+  document.querySelectorAll(".cp-eye").forEach(function(btn) {
+    var input = document.getElementById(btn.dataset.target);
+    if (input) input.type = "password";
+    btn.classList.remove("active");
+    btn.textContent = "\uD83D\uDC41";
+  });
   cpCurrent.focus();
 }
 function closeCpModal() { cpModal.hidden = true; }

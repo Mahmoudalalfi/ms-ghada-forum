@@ -97,15 +97,24 @@
       <div class="cp-modal-body">
         <div class="cp-field">
           <label for="cpCurrent">Current Password</label>
-          <input id="cpCurrent" type="password" autocomplete="current-password" placeholder="Enter current password">
+          <div class="cp-input-wrap">
+            <input id="cpCurrent" type="password" autocomplete="current-password" placeholder="Enter current password">
+            <button type="button" class="cp-eye" aria-label="Toggle visibility" data-target="cpCurrent">&#x1F441;</button>
+          </div>
         </div>
         <div class="cp-field">
           <label for="cpNew">New Password</label>
-          <input id="cpNew" type="password" autocomplete="new-password" placeholder="Min 12 chars, uppercase, number, symbol">
+          <div class="cp-input-wrap">
+            <input id="cpNew" type="password" autocomplete="new-password" placeholder="Min 12 chars, uppercase, number, symbol">
+            <button type="button" class="cp-eye" aria-label="Toggle visibility" data-target="cpNew">&#x1F441;</button>
+          </div>
         </div>
         <div class="cp-field">
           <label for="cpConfirm">Confirm New Password</label>
-          <input id="cpConfirm" type="password" autocomplete="new-password" placeholder="Repeat new password">
+          <div class="cp-input-wrap">
+            <input id="cpConfirm" type="password" autocomplete="new-password" placeholder="Repeat new password">
+            <button type="button" class="cp-eye" aria-label="Toggle visibility" data-target="cpConfirm">&#x1F441;</button>
+          </div>
         </div>
         <p class="cp-error" id="cpError" hidden></p>
         <p class="cp-success" id="cpSuccess" hidden></p>
@@ -155,14 +164,23 @@
       font-family: var(--font-ui); font-size: 0.8rem;
       font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase;
     }
-    .cp-field input {
+    .cp-input-wrap { position: relative; }
+    .cp-input-wrap input {
       width: 100%; border: 1px solid rgba(167,139,250,0.3); border-radius: 999px;
-      padding: 11px 18px; font-family: var(--font-ui); font-size: 14px; font-weight: 500;
+      padding: 11px 46px 11px 18px; font-family: var(--font-ui); font-size: 14px; font-weight: 500;
       color: var(--text); background: rgba(255,255,255,0.9); outline: none;
       transition: border-color 0.25s ease, box-shadow 0.25s ease;
       -webkit-user-select: text; user-select: text;
     }
-    .cp-field input:focus { border-color: var(--purple-600); box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+    .cp-input-wrap input:focus { border-color: var(--purple-600); box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+    .cp-eye {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; padding: 4px;
+      font-size: 1rem; line-height: 1; opacity: 0.45;
+      transition: opacity 0.2s ease;
+    }
+    .cp-eye:hover { opacity: 0.9; }
+    .cp-eye.active { opacity: 0.9; }
     .cp-error   { font-size: 0.84rem; font-weight: 600; color: var(--danger); padding: 0 4px; }
     .cp-success { font-size: 0.84rem; font-weight: 600; color: #059669; padding: 0 4px; }
     .cp-modal-footer {

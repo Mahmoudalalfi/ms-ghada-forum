@@ -18,5 +18,8 @@
     "helmet": "^8.1.0",
     "pg": "^8.20.0",
     "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
   }
 }

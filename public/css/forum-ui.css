@@ -1123,7 +1123,8 @@ select:focus {
   color: var(--text-muted);
   text-align: right;
 }
-.footer-dev strong {
+.footer-dev strong,
+.footer-brand-name {
   color: var(--purple-700);
   font-weight: 700;
 }

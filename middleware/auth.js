@@ -154,7 +154,9 @@ function handleAdminLogin(req, res) {
 
   const username = String(req.body.username || "");
   const password = String(req.body.password || "");
-  const next     = String(req.body.next || "/").replace(/[^a-zA-Z0-9/_-]/g, "") || "/";
+  const rawNext  = String(req.body.next || "/").replace(/[^a-zA-Z0-9/_-]/g, "");
+  // Must start with exactly one "/" to prevent protocol-relative open redirects (//evil.com)
+  const next     = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
 
   const passwordHash = hashPassword(password);
   const usernameOk   = timingSafeEqualStr(username, ADMIN_USERNAME);

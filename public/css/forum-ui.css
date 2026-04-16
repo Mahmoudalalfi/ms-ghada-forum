@@ -292,9 +292,9 @@ body::after {
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
-  padding: 3px;
+  padding: 0;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(192,132,252,0.45), rgba(244,114,182,0.35), rgba(167,139,250,0.35));
+  background: none;
   box-shadow: var(--shadow-md);
   position: relative;
   transition: transform var(--timing-soft), box-shadow var(--timing-soft);
@@ -310,11 +310,11 @@ body::after {
   gap: 14px;
   flex-wrap: wrap;
   width: 100%;
-  border-radius: calc(var(--radius-lg) - 3px);
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(167, 139, 250, 0.18);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
   padding: 16px 22px;
 }

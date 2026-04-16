@@ -1048,10 +1048,40 @@ select:focus {
   .field-grid { grid-template-columns: 1fr; }
   .field.full { grid-column: auto; }
   .top-bar { gap: 10px; padding: 12px 14px; border-radius: 14px; }
-  .hero { border-radius: var(--radius-lg); padding: 18px 16px; }
-  .hero-year { font-size: clamp(3rem, 22vw, 5rem); right: 8px; top: 8px; transform: none; color: rgba(109, 75, 255, 0.08); }
-  .hero-inner { gap: 20px; }
-  .hero-visual { min-height: 160px; }
+  .hero { border-radius: var(--radius-lg); padding: 0; overflow: hidden; }
+  .hero-panel { padding: 0; border-radius: var(--radius-lg); }
+  .hero-panel-inner { border-radius: var(--radius-lg); padding: 0; }
+  .hero-layout {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    overflow: visible;
+  }
+  .hero-copy {
+    flex: none;
+    max-width: 100%;
+    padding: 20px 18px 16px;
+    gap: 12px;
+  }
+  .hero-visual {
+    flex: none;
+    margin: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: hidden;
+    min-height: 0;
+    height: clamp(220px, 55vw, 320px);
+    position: relative;
+    align-self: stretch;
+  }
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transform: none;
+  }
+  .hero-year { display: none; }
   .reveal { filter: none !important; }
   .hero .hero-copy > *, .hero .hero-visual { filter: none !important; }
   h1 { font-size: clamp(1.45rem, 7vw, 2rem); line-height: 1.15; max-width: 100%; }

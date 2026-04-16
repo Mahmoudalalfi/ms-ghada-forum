@@ -1086,7 +1086,7 @@ select:focus {
   .hero-photo {
     position: absolute;
     bottom: -10%;
-    right: -55%;
+    right: 0%;
     left: auto;
     top: auto;
     width: auto;

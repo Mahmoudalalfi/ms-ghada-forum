@@ -1048,44 +1048,62 @@ select:focus {
   .field-grid { grid-template-columns: 1fr; }
   .field.full { grid-column: auto; }
   .top-bar { gap: 10px; padding: 12px 14px; border-radius: 14px; }
-  .hero { border-radius: var(--radius-lg); padding: 0; overflow: hidden; }
-  .hero-panel { padding: 0; border-radius: var(--radius-lg); }
-  .hero-panel-inner { border-radius: var(--radius-lg); padding: 0; }
+  .hero { border-radius: var(--radius-lg); overflow: hidden; }
+  .hero-panel { overflow: hidden; }
+  .hero-panel-inner { overflow: visible; padding: 0; position: relative; }
+  /* Clip only the layout row */
   .hero-layout {
-    flex-direction: column-reverse;
+    overflow: hidden;
+    flex-direction: row;
     align-items: stretch;
+    min-height: clamp(320px, 85vw, 500px);
+    margin: 0;
+    position: relative;
+  }
+  /* Text column: left 58% */
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 58%;
+    max-width: 58%;
+    padding: clamp(1rem, 4vw, 1.5rem) 0 clamp(1rem, 4vw, 1.5rem) clamp(0.9rem, 4vw, 1.4rem);
+    gap: 10px;
     overflow: visible;
   }
-  .hero-copy {
-    flex: none;
-    max-width: 100%;
-    padding: 20px 18px 16px;
-    gap: 12px;
-  }
+  /* Image column: right, bleeds to show full figure */
   .hero-visual {
-    flex: none;
-    margin: 0;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    overflow: hidden;
-    min-height: 0;
-    height: clamp(220px, 55vw, 320px);
     position: relative;
+    flex: 0 0 46%;
+    max-width: 46%;
     align-self: stretch;
+    overflow: visible;
+    margin: 0;
+    margin-right: calc(-1 * clamp(1rem, 3vw, 1.5rem) - 3px);
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 0;
   }
   .hero-photo {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
+    bottom: -10%;
+    right: -85%;
+    left: auto;
+    top: auto;
+    width: auto;
+    height: 115%;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+    object-position: bottom right;
     transform: none;
+    filter: none;
   }
   .hero-year { display: none; }
   .reveal { filter: none !important; }
   .hero .hero-copy > *, .hero .hero-visual { filter: none !important; }
-  h1 { font-size: clamp(1.45rem, 7vw, 2rem); line-height: 1.15; max-width: 100%; }
-  .subtitle { font-size: 0.95rem; }
+  h1 { font-size: clamp(1.3rem, 6.5vw, 1.8rem); line-height: 1.15; max-width: 100%; }
+  .subtitle { font-size: 0.88rem; }
+  .quote-box { font-size: 0.82rem; padding: 10px 12px; }
   .form-card { border-radius: 20px; padding: 16px 14px; }
   .form-title { font-size: 1.2rem; }
   .actions { flex-direction: column; align-items: stretch; gap: 10px; }
@@ -1098,12 +1116,15 @@ select:focus {
 
 @media (max-width: 480px) {
   body { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+  .hero-copy { flex: 0 0 60%; max-width: 60%; }
+  .hero-visual { flex: 0 0 40%; max-width: 40%; }
+  .hero-layout { min-height: clamp(280px, 100vw, 420px); }
   .top-bar { justify-content: center; text-align: center; }
   .brand { font-size: 1rem; }
   .brand-logo { width: 30px; height: 30px; }
   .badge { display: none; }
   .welcome { font-size: 0.82rem; }
-  .quote-box { min-height: 58px; font-size: 0.93rem; padding: 12px 13px; }
+  .quote-box { min-height: 58px; font-size: 0.82rem; padding: 10px 12px; }
   .choices { gap: 8px; }
   .choice span { font-size: 0.84rem; padding: 8px 10px; }
   .course-panel { max-height: min(280px, 48vh); }

@@ -4,6 +4,7 @@ const {
   setAdminSessionCookie,
   hashPassword,
   getCurrentPasswordHash,
+  getPasswordHashFromDb,
   updatePasswordInDb,
   timingSafeEqualStr,
 } = require("../middleware/auth");
@@ -60,9 +61,10 @@ async function changePassword(req, res) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    // Verify current password
+    // Verify current password against DB
+    const storedHash  = await getPasswordHashFromDb();
     const currentHash = hashPassword(currentPassword);
-    if (!timingSafeEqualStr(currentHash, getCurrentPasswordHash())) {
+    if (!timingSafeEqualStr(currentHash, storedHash)) {
       return res.status(401).json({ error: "Current password is incorrect." });
     }
 
@@ -85,7 +87,7 @@ async function changePassword(req, res) {
     await updatePasswordInDb(newHash);
 
     // Reissue session cookie with new password hash baked in
-    setAdminSessionCookie(res);
+    await setAdminSessionCookie(res);
 
     res.json({ message: "Password changed successfully." });
   } catch (err) {

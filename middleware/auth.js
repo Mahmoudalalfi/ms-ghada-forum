@@ -4,35 +4,37 @@ const isProduction = process.env.NODE_ENV === "production";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 
-// ── Live password store (loaded from DB on init, falls back to .env) ──────────
-let _currentPasswordHash = null; // bcrypt-style: we store sha256 hex of password
+// ── Live password store ───────────────────────────────────────────────────────
 const ENV_PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
 
-// We use a simple SHA-256 hash (no bcrypt dependency needed — password is
-// already high-entropy and the hash is stored server-side only, not user-facing)
 function hashPassword(plain) {
   return crypto.createHash("sha256").update(plain).digest("hex");
 }
 
-async function loadPasswordFromDb() {
+// Always fetch from DB — never trust in-memory on serverless (cold starts reset state)
+async function getPasswordHashFromDb() {
   try {
     const { pool } = require("../models/db");
     const result = await pool.query("SELECT password_hash FROM admin_credentials WHERE id = 1 LIMIT 1");
     if (result.rowCount) {
-      _currentPasswordHash = result.rows[0].password_hash;
-    } else {
-      // Seed DB with current .env password
-      _currentPasswordHash = hashPassword(ENV_PASSWORD);
-      await pool.query(
-        `INSERT INTO admin_credentials (id, password_hash) VALUES (1, $1)
-         ON CONFLICT (id) DO NOTHING`,
-        [_currentPasswordHash]
-      );
+      return result.rows[0].password_hash;
     }
+    // No row yet — seed from env
+    const hash = hashPassword(ENV_PASSWORD);
+    await pool.query(
+      `INSERT INTO admin_credentials (id, password_hash) VALUES (1, $1) ON CONFLICT (id) DO NOTHING`,
+      [hash]
+    );
+    return hash;
   } catch (err) {
     console.error("Could not load admin password from DB, falling back to .env:", err.message);
-    _currentPasswordHash = hashPassword(ENV_PASSWORD);
+    return hashPassword(ENV_PASSWORD);
   }
+}
+
+async function loadPasswordFromDb() {
+  // Called on startup — no-op now since we always go to DB per request
+  await getPasswordHashFromDb();
 }
 
 async function updatePasswordInDb(newPasswordHash) {
@@ -43,11 +45,12 @@ async function updatePasswordInDb(newPasswordHash) {
      ON CONFLICT (id) DO UPDATE SET password_hash = $1, updated_at = NOW()`,
     [newPasswordHash]
   );
-  _currentPasswordHash = newPasswordHash;
 }
 
+// Kept for session token (uses cached value — acceptable since session
+// tokens are re-validated on every request anyway)
 function getCurrentPasswordHash() {
-  return _currentPasswordHash || hashPassword(ENV_PASSWORD);
+  return hashPassword(ENV_PASSWORD); // session token stability — see below
 }
 
 // ── Brute-force lockout ───────────────────────────────────────────────────────
@@ -91,10 +94,11 @@ function timingSafeEqualStr(a, b) {
   return crypto.timingSafeEqual(aBuf, bBuf);
 }
 
-function getAdminSessionToken() {
+async function getAdminSessionToken() {
+  const hash = await getPasswordHashFromDb();
   return crypto
     .createHmac("sha256", ADMIN_SESSION_SECRET)
-    .update(`${ADMIN_USERNAME}:${getCurrentPasswordHash()}`)
+    .update(`${ADMIN_USERNAME}:${hash}`)
     .digest("hex");
 }
 
@@ -109,8 +113,8 @@ function parseCookieHeader(headerValue) {
   return output;
 }
 
-function setAdminSessionCookie(res) {
-  const token = getAdminSessionToken();
+async function setAdminSessionCookie(res) {
+  const token = await getAdminSessionToken();
   const cookieParts = [
     `admin_session=${encodeURIComponent(token)}`,
     "Path=/", "HttpOnly", "SameSite=Strict", "Max-Age=28800"
@@ -126,14 +130,15 @@ function clearAdminSessionCookie(res) {
 }
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-function requireAdminAuth(req, res, next) {
+async function requireAdminAuth(req, res, next) {
   const ip = getClientIpForAuth(req);
   if (isLockedOut(ip)) {
     return res.status(429).send("Too many failed login attempts. Try again in 15 minutes.");
   }
 
   const cookies = parseCookieHeader(req.headers.cookie);
-  if (cookies.admin_session && timingSafeEqualStr(cookies.admin_session, getAdminSessionToken())) {
+  const expectedToken = await getAdminSessionToken();
+  if (cookies.admin_session && timingSafeEqualStr(cookies.admin_session, expectedToken)) {
     return next();
   }
 
@@ -142,11 +147,10 @@ function requireAdminAuth(req, res, next) {
     return res.status(401).json({ error: "Authentication required." });
   }
 
-  const loginPath = (process.env.ADMIN_DASHBOARD_PATH || "/teacher-portal-ghada").trim();
   return res.redirect(`/admin-login?next=${encodeURIComponent(req.path)}`);
 }
 
-function handleAdminLogin(req, res) {
+async function handleAdminLogin(req, res) {
   const ip = getClientIpForAuth(req);
   if (isLockedOut(ip)) {
     return res.status(429).send("Too many failed attempts. Try again in 15 minutes.");
@@ -155,12 +159,12 @@ function handleAdminLogin(req, res) {
   const username = String(req.body.username || "");
   const password = String(req.body.password || "");
   const rawNext  = String(req.body.next || "/").replace(/[^a-zA-Z0-9/_-]/g, "");
-  // Must start with exactly one "/" to prevent protocol-relative open redirects (//evil.com)
   const next     = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
 
-  const passwordHash = hashPassword(password);
-  const usernameOk   = timingSafeEqualStr(username, ADMIN_USERNAME);
-  const passwordOk   = timingSafeEqualStr(passwordHash, getCurrentPasswordHash());
+  const passwordHash   = hashPassword(password);
+  const storedHash     = await getPasswordHashFromDb();
+  const usernameOk     = timingSafeEqualStr(username, ADMIN_USERNAME);
+  const passwordOk     = timingSafeEqualStr(passwordHash, storedHash);
 
   if (!usernameOk || !passwordOk) {
     recordFailure(ip);
@@ -168,7 +172,7 @@ function handleAdminLogin(req, res) {
   }
 
   recordSuccess(ip);
-  setAdminSessionCookie(res);
+  await setAdminSessionCookie(res);
   return res.redirect(next);
 }
 
@@ -216,6 +220,7 @@ module.exports = {
   timingSafeEqualStr,
   hashPassword,
   getCurrentPasswordHash,
+  getPasswordHashFromDb,
   loadPasswordFromDb,
   updatePasswordInDb,
 };

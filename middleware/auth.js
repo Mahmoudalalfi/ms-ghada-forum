@@ -137,37 +137,37 @@ function requireAdminAuth(req, res, next) {
     return next();
   }
 
-  const authHeader = req.headers.authorization || "";
-  if (!authHeader.startsWith("Basic ")) {
-    res.set("WWW-Authenticate", 'Basic realm="Teacher Dashboard"');
-    return res.status(401).send("Authentication required.");
+  // No valid session — redirect to login page (or 401 for API calls)
+  if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.path.startsWith("/api/")) {
+    return res.status(401).json({ error: "Authentication required." });
   }
 
-  let decoded = "";
-  try {
-    decoded = Buffer.from(authHeader.slice(6), "base64").toString("utf8");
-  } catch {
-    recordFailure(ip);
-    return res.status(401).send("Invalid authentication token.");
+  const loginPath = (process.env.ADMIN_DASHBOARD_PATH || "/teacher-portal-ghada").trim();
+  return res.redirect(`/admin-login?next=${encodeURIComponent(req.path)}`);
+}
+
+function handleAdminLogin(req, res) {
+  const ip = getClientIpForAuth(req);
+  if (isLockedOut(ip)) {
+    return res.status(429).send("Too many failed attempts. Try again in 15 minutes.");
   }
 
-  const sep = decoded.indexOf(":");
-  const username = sep >= 0 ? decoded.slice(0, sep) : "";
-  const password = sep >= 0 ? decoded.slice(sep + 1) : "";
+  const username = String(req.body.username || "");
+  const password = String(req.body.password || "");
+  const next     = String(req.body.next || "/").replace(/[^a-zA-Z0-9/_-]/g, "") || "/";
 
   const passwordHash = hashPassword(password);
-  const usernameOk = timingSafeEqualStr(username, ADMIN_USERNAME);
-  const passwordOk = timingSafeEqualStr(passwordHash, getCurrentPasswordHash());
+  const usernameOk   = timingSafeEqualStr(username, ADMIN_USERNAME);
+  const passwordOk   = timingSafeEqualStr(passwordHash, getCurrentPasswordHash());
 
   if (!usernameOk || !passwordOk) {
     recordFailure(ip);
-    res.set("WWW-Authenticate", 'Basic realm="Teacher Dashboard"');
-    return res.status(401).send("Invalid username or password.");
+    return res.redirect(`/admin-login?next=${encodeURIComponent(next)}&error=1`);
   }
 
   recordSuccess(ip);
   setAdminSessionCookie(res);
-  next();
+  return res.redirect(next);
 }
 
 function requireBrowserSafeRequest(req, res, next) {
@@ -207,6 +207,7 @@ function requireBrowserSafeRequest(req, res, next) {
 
 module.exports = {
   requireAdminAuth,
+  handleAdminLogin,
   requireBrowserSafeRequest,
   clearAdminSessionCookie,
   setAdminSessionCookie,

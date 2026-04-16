@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal Login | Mrs Ghada Omar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: #FAFAFA;
+      background-image: linear-gradient(rgba(15,23,42,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(15,23,42,0.028) 1px, transparent 1px);
+      background-size: 40px 40px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -30%;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 58% 46% at 82% 2%, rgba(253,224,236,0.28), transparent 56%),
+        radial-gradient(ellipse 50% 45% at 10% 90%, rgba(251,207,232,0.4), transparent 55%),
+        radial-gradient(ellipse 45% 40% at 50% 50%, rgba(244,244,255,0.5), transparent 60%);
+    }
+    .card {
+      width: min(420px, 100%);
+      padding: 3px;
+      border-radius: 28px;
+      background: linear-gradient(135deg, rgba(192,132,252,0.45), rgba(244,114,182,0.35), rgba(167,139,250,0.35));
+      box-shadow: 0 12px 40px -8px rgba(139,92,246,0.18);
+    }
+    .card-inner {
+      border-radius: 25px;
+      background: rgba(255,255,255,0.96);
+      padding: 40px 36px 36px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .brand img { display: block; }
+    .brand-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1E1B2E;
+      line-height: 1.2;
+    }
+    .brand-art {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 0.88rem;
+      background: linear-gradient(110deg, #6d28d9, #a855f7, #e879f9, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1E1B2E;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 0.85rem;
+      color: #64748B;
+      margin-bottom: 28px;
+    }
+    .field { display: grid; gap: 6px; margin-bottom: 16px; }
+    label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .input-wrap { position: relative; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      border: 1px solid rgba(167,139,250,0.3);
+      border-radius: 999px;
+      padding: 12px 44px 12px 18px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1E1B2E;
+      background: rgba(255,255,255,0.9);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus { border-color: #A855F7; box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+    .eye-btn {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; opacity: 0.45; padding: 4px;
+      transition: opacity 0.2s;
+    }
+    .eye-btn:hover { opacity: 0.9; }
+    .error-msg {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 12px;
+      color: #dc2626;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #A855F7, #E879F9, #F472B6);
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-inner">
+      <div class="brand">
+        <img src="/favicon.svg" alt="G logo" width="36" height="36">
+        <div class="brand-text">
+          Mrs Ghada Omar
+          <span class="brand-art">Teacher Portal</span>
+        </div>
+      </div>
+      <h1>Sign in</h1>
+      <p class="subtitle">Enter your credentials to access the dashboard.</p>
+
+      <form method="POST" action="/admin-login" autocomplete="on">
+        <input type="hidden" name="next" value="">
+
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" placeholder="Enter username" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required>
+            <button type="button" class="eye-btn" id="eyeBtn">👁</button>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Set next param from URL
+    var params = new URLSearchParams(window.location.search);
+    document.querySelector('input[name="next"]').value = params.get("next") || "/";
+
+    // Show error if redirected back with error=1
+    if (params.get("error") === "1") {
+      var form = document.querySelector("form");
+      var err = document.createElement("p");
+      err.className = "error-msg";
+      err.textContent = "Incorrect username or password. Please try again.";
+      form.insertBefore(err, form.firstChild);
+    }
+
+    // Eye toggle
+    document.getElementById("eyeBtn").addEventListener("click", function() {
+      var input = document.getElementById("password");
+      var isText = input.type === "text";
+      input.type = isText ? "password" : "text";
+      this.textContent = isText ? "👁" : "🙈";
+    });
+  </script>
+</body>
+</html>

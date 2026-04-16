@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 
 // ── No-cache for sensitive routes ─────────────────────────────────────────────
 app.use((req, res, next) => {
-  const noCache = ["/teacher-portal-ghada", "/teacher", "/admin.html", "/api/registrations"];
+  const noCache = ["/teacher-portal-ghada", "/admin-login", "/teacher", "/admin.html", "/api/registrations"];
   if (noCache.some((p) => req.path.startsWith(p))) {
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.setHeader("Pragma", "no-cache");

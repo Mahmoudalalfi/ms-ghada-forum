@@ -37,10 +37,7 @@ function serveAdminPanel(_req, res) {
 
 function logout(req, res) {
   clearAdminSessionCookie(res);
-  // Sending 401 with WWW-Authenticate forces the browser to discard
-  // its cached Basic Auth credentials, so the next visit requires login.
-  res.set("WWW-Authenticate", 'Basic realm="Teacher Dashboard"');
-  res.status(401).json({ message: "Logged out." });
+  res.json({ message: "Logged out." });
 }
 
 function getCourseLinks(req, res) {

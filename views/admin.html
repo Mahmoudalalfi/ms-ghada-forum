@@ -87,6 +87,22 @@
       </div>
     </div>
   </main>
+  <!-- Course Links Modal -->
+  <div id="linksModal" class="cp-modal-backdrop" hidden>
+    <div class="cp-modal" role="dialog" aria-modal="true" aria-labelledby="linksModalTitle" style="width:min(560px,100%)">
+      <div class="cp-modal-header">
+        <span id="linksModalTitle" class="cp-modal-title">Course Registration Links</span>
+        <button id="linksModalClose" type="button" class="cp-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="cp-modal-body" id="linksModalBody" style="gap:10px;max-height:60vh;overflow-y:auto;">
+        <p style="font-size:0.84rem;color:var(--text-muted);margin:0">Loading&hellip;</p>
+      </div>
+      <div class="cp-modal-footer">
+        <button id="linksModalDone" type="button" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Change Password Modal -->
   <div id="cpModal" class="cp-modal-backdrop" hidden>
     <div class="cp-modal" role="dialog" aria-modal="true" aria-labelledby="cpModalTitle">
@@ -187,6 +203,33 @@
       display: flex; justify-content: flex-end; gap: 10px;
       padding: 16px 24px 20px;
       border-top: 1px solid rgba(167,139,250,0.15);
+    }
+    .links-row {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(139,92,246,0.05); border: 1px solid rgba(167,139,250,0.2);
+      border-radius: 14px; padding: 10px 14px;
+      min-width: 0; overflow: hidden;
+    }
+    .links-row-label {
+      font-family: var(--font-ui); font-size: 0.78rem; font-weight: 700;
+      color: var(--purple-600); text-transform: uppercase; letter-spacing: 0.05em;
+      min-width: 130px; flex-shrink: 0;
+    }
+    .links-row-url {
+      font-family: monospace; font-size: 0.78rem; color: var(--text-muted);
+      flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .copy-btn {
+      flex-shrink: 0; padding: 5px 14px; font-size: 0.78rem; font-weight: 700;
+      border-radius: 999px; border: 1.5px solid rgba(139,92,246,0.4);
+      background: transparent; color: var(--purple-600); cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .copy-btn:hover { background: var(--purple-600); color: #fff; }
+    .copy-btn.copied { background: #059669; border-color: #059669; color: #fff; }
+    .links-expiry {
+      font-size: 0.8rem; color: var(--text-muted); padding: 2px 4px;
+      font-style: italic;
     }
   </style>
 

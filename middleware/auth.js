@@ -4,14 +4,12 @@ const isProduction = process.env.NODE_ENV === "production";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || crypto.randomBytes(32).toString("hex");
 
-// ── Live password store ───────────────────────────────────────────────────────
 const ENV_PASSWORD = process.env.ADMIN_PASSWORD || "change-me";
 
 function hashPassword(plain) {
   return crypto.createHash("sha256").update(plain).digest("hex");
 }
 
-// Always fetch from DB — never trust in-memory on serverless (cold starts reset state)
 async function getPasswordHashFromDb() {
   try {
     const { pool } = require("../models/db");
@@ -19,7 +17,6 @@ async function getPasswordHashFromDb() {
     if (result.rowCount) {
       return result.rows[0].password_hash;
     }
-    // No row yet — seed from env
     const hash = hashPassword(ENV_PASSWORD);
     await pool.query(
       `INSERT INTO admin_credentials (id, password_hash) VALUES (1, $1) ON CONFLICT (id) DO NOTHING`,
@@ -33,7 +30,6 @@ async function getPasswordHashFromDb() {
 }
 
 async function loadPasswordFromDb() {
-  // Called on startup — no-op now since we always go to DB per request
   await getPasswordHashFromDb();
 }
 
@@ -47,13 +43,10 @@ async function updatePasswordInDb(newPasswordHash) {
   );
 }
 
-// Kept for session token (uses cached value — acceptable since session
-// tokens are re-validated on every request anyway)
 function getCurrentPasswordHash() {
-  return hashPassword(ENV_PASSWORD); // session token stability — see below
+  return hashPassword(ENV_PASSWORD);
 }
 
-// ── Brute-force lockout ───────────────────────────────────────────────────────
 const MAX_FAILURES  = 10;
 const LOCKOUT_MS    = 15 * 60 * 1000;
 const loginFailures = new Map();
@@ -86,7 +79,6 @@ function recordSuccess(ip) {
   loginFailures.delete(ip);
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function timingSafeEqualStr(a, b) {
   const aBuf = Buffer.from(String(a || ""), "utf8");
   const bBuf = Buffer.from(String(b || ""), "utf8");
@@ -129,7 +121,6 @@ function clearAdminSessionCookie(res) {
   res.setHeader("Set-Cookie", cookieParts.join("; "));
 }
 
-// ── Middleware ────────────────────────────────────────────────────────────────
 async function requireAdminAuth(req, res, next) {
   const ip = getClientIpForAuth(req);
   if (isLockedOut(ip)) {
@@ -142,7 +133,6 @@ async function requireAdminAuth(req, res, next) {
     return next();
   }
 
-  // No valid session — redirect to login page (or 401 for API calls)
   if (req.headers["x-requested-with"] === "XMLHttpRequest" || req.path.startsWith("/api/")) {
     return res.status(401).json({ error: "Authentication required." });
   }

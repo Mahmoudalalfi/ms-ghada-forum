@@ -246,19 +246,57 @@ exportBtn.addEventListener("click", function() {
   exportAll().catch(function(e) { statusText.textContent = e.message; });
 });
 
+var linksModal = document.getElementById("linksModal");
+var linksModalClose = document.getElementById("linksModalClose");
+var linksModalDone = document.getElementById("linksModalDone");
+var linksModalBody = document.getElementById("linksModalBody");
+
+function closeLinksModal() { linksModal.hidden = true; }
+linksModalClose.addEventListener("click", closeLinksModal);
+linksModalDone.addEventListener("click", closeLinksModal);
+linksModal.addEventListener("click", function(e) { if (e.target === linksModal) closeLinksModal(); });
+document.addEventListener("keydown", function(e) { if (e.key === "Escape" && !linksModal.hidden) closeLinksModal(); });
+
 linksBtn.addEventListener("click", async function() {
+  while (linksModalBody.firstChild) linksModalBody.removeChild(linksModalBody.firstChild);
+  var loadingP = document.createElement("p");
+  loadingP.style.cssText = "font-size:0.84rem;color:var(--text-muted);margin:0";
+  loadingP.textContent = "Loading\u2026";
+  linksModalBody.appendChild(loadingP);
+  linksModal.hidden = false;
   try {
     var response = await fetch("/api/admin/course-links");
     if (!response.ok) throw new Error("Could not generate course links.");
     var payload = await response.json();
-    var lines = ["Course Links (expires in " + payload.expiresInDays + " days):", ""];
-    payload.links.forEach(function(entry) { lines.push(entry.course + ": " + entry.link); });
-    var blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8;" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a"); a.href = url; a.download = "course-links.txt"; a.click();
-    URL.revokeObjectURL(url);
-    statusText.textContent = "Course links file downloaded.";
-  } catch(err) { statusText.textContent = err.message; }
+    while (linksModalBody.firstChild) linksModalBody.removeChild(linksModalBody.firstChild);
+    var expiry = document.createElement("p");
+    expiry.className = "links-expiry";
+    expiry.textContent = "Links expire in ";
+    var strong = document.createElement("strong");
+    strong.textContent = payload.expiresInDays + " days";
+    expiry.appendChild(strong);
+    linksModalBody.appendChild(expiry);
+    payload.links.forEach(function(entry) {
+      var row = document.createElement("div"); row.className = "links-row";
+      var label = document.createElement("span"); label.className = "links-row-label"; label.textContent = entry.course;
+      var urlSpan = document.createElement("span"); urlSpan.className = "links-row-url"; urlSpan.title = entry.link; urlSpan.textContent = entry.link;
+      var copyBtn = document.createElement("button"); copyBtn.className = "copy-btn"; copyBtn.textContent = "Copy";
+      copyBtn.addEventListener("click", function() {
+        navigator.clipboard.writeText(entry.link).then(function() {
+          copyBtn.textContent = "Copied!"; copyBtn.classList.add("copied");
+          setTimeout(function() { copyBtn.textContent = "Copy"; copyBtn.classList.remove("copied"); }, 2000);
+        });
+      });
+      row.appendChild(label); row.appendChild(urlSpan); row.appendChild(copyBtn);
+      linksModalBody.appendChild(row);
+    });
+  } catch(err) {
+    while (linksModalBody.firstChild) linksModalBody.removeChild(linksModalBody.firstChild);
+    var errP = document.createElement("p");
+    errP.style.cssText = "font-size:0.84rem;color:var(--danger);margin:0";
+    errP.textContent = err.message;
+    linksModalBody.appendChild(errP);
+  }
 });
 
 document.querySelectorAll(".cp-eye").forEach(function(btn) {

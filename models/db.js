@@ -53,7 +53,6 @@ async function initDb() {
     ON course_link_tokens (token_id)
   `);
 
-  // Single-row table that overrides ADMIN_PASSWORD from .env at runtime
   await pool.query(`
     CREATE TABLE IF NOT EXISTS admin_credentials (
       id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),

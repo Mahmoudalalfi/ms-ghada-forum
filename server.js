@@ -9,7 +9,6 @@ const { loadPasswordFromDb } = require("./middleware/auth");
 const studentRouter = require("./routes/student");
 const adminRouter = require("./routes/admin");
 
-// ── Production credential guard ───────────────────────────────────────────────
 if (process.env.NODE_ENV === "production") {
   const missing = ["ADMIN_USERNAME", "ADMIN_PASSWORD", "ADMIN_SESSION_SECRET", "COURSE_LINK_SECRET"]
     .filter((k) => !process.env[k]);
@@ -30,7 +29,6 @@ const isVercel = Boolean(process.env.VERCEL);
 const allowedHosts = (process.env.ALLOWED_HOSTS || "")
   .split(",").map((h) => h.trim().toLowerCase()).filter(Boolean);
 
-// ── Security headers ──────────────────────────────────────────────────────────
 app.disable("x-powered-by");
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
@@ -56,7 +54,6 @@ app.use((_req, res, next) => {
   next();
 });
 
-// ── Host allowlist ────────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   if (!allowedHosts.length) return next();
   const host = (req.headers.host || "").split(":")[0].toLowerCase();
@@ -65,7 +62,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// ── No-cache for sensitive routes ─────────────────────────────────────────────
 app.use((req, res, next) => {
   const noCache = ["/teacher-portal-ghada", "/admin-login", "/teacher", "/admin.html", "/api/registrations"];
   if (noCache.some((p) => req.path.startsWith(p))) {
@@ -76,18 +72,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// ── Body parsing ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: "12kb", strict: true, type: "application/json" }));
 
-// ── Static assets ─────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, "public"), { index: false }));
 
-// ── Routes ────────────────────────────────────────────────────────────────────
 app.use(studentRouter);
 app.use(adminRouter);
 
-// ── Global error handler (must be last, 4-arg signature) ─────────────────────
-// eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err);
   const status = (typeof err.status === "number" && err.status >= 400 && err.status < 600)
@@ -95,7 +86,6 @@ app.use((err, _req, res, _next) => {
   res.status(status).json({ error: "An unexpected error occurred." });
 });
 
-// ── DB init + server start ────────────────────────────────────────────────────
 const initPromise = initDb().then(loadPasswordFromDb);
 
 if (!isVercel) {
